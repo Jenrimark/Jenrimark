@@ -12,6 +12,16 @@ function Write-Log([string]$msg) {
     Add-Content -Path $LogFile -Value $line -Encoding UTF8
 }
 
+function Invoke-Git {
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & git @GitArgs 2>&1 | Out-Null
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prev
+    return $code
+}
+
 if (-not (Test-Path $RepoRoot)) {
     Write-Log "ERROR: Repo not found: $RepoRoot"
     exit 1
@@ -31,17 +41,19 @@ if (-not (Test-Path ".git")) {
 
 Write-Log "Checking origin/$Branch ..."
 
-git fetch origin $Branch 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
+if ((Invoke-Git fetch origin $Branch) -ne 0) {
     Write-Log "ERROR: git fetch failed"
     exit 1
 }
 
 $remoteRef = "origin/$Branch"
-try {
-    $localHash  = (git rev-parse HEAD).Trim()
-    $remoteHash = (git rev-parse $remoteRef).Trim()
-} catch {
+$prev = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$localHash  = (git rev-parse HEAD 2>$null).Trim()
+$remoteHash = (git rev-parse $remoteRef 2>$null).Trim()
+$ErrorActionPreference = $prev
+
+if (-not $localHash -or -not $remoteHash) {
     Write-Log "ERROR: Cannot read commits. Check branch $remoteRef"
     exit 1
 }

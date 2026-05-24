@@ -3,6 +3,18 @@
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-Git {
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & git @GitArgs 2>&1 | Out-Null
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prev
+    if ($code -ne 0) {
+        throw "git failed: git $($GitArgs -join ' ') (exit $code)"
+    }
+}
+
 $RepoRoot   = if ($env:REPO_ROOT)   { $env:REPO_ROOT }   else { "E:\Desktop\Jenrimark" }
 $BuildDist  = Join-Path $RepoRoot "dist"
 $DeployPath = if ($env:DEPLOY_PATH) { $env:DEPLOY_PATH } else { $BuildDist }
@@ -27,9 +39,12 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
 }
 
 Write-Host "==> git pull..."
-git fetch origin $Branch
-git checkout $Branch 2>$null
-git pull origin $Branch
+Invoke-Git fetch origin $Branch
+$prev = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+git checkout $Branch 2>$null | Out-Null
+$ErrorActionPreference = $prev
+Invoke-Git pull origin $Branch
 
 Write-Host "==> npm ci..."
 npm ci
