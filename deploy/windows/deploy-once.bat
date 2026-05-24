@@ -1,7 +1,6 @@
 @echo off
 setlocal EnableExtensions
 
-rem Go to repo root: ...\Jenrimark\
 cd /d "%~dp0"
 cd /d "..\.."
 set "REPO_ROOT=%CD%"

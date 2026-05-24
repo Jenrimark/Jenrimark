@@ -22,7 +22,7 @@ npm run preview  # 预览构建结果
 **Mac 开发 + Windows 家里？** 按 [docs/傻瓜教程-Mac开发-Windows家里.md](docs/傻瓜教程-Mac开发-Windows家里.md) 一步步做即可。
 
 **家里 Windows 用 Git 拉代码自动构建？** 见 [docs/Windows-Git自动部署.md](docs/Windows-Git自动部署.md)。  
-**push 后自动更新？** 家里双击 `deploy/windows/后台监听更新.bat`（每 5 分钟检查 GitHub）。
+**push 后自动更新？** 家里运行 `deploy/windows/watch-update.bat`（每 5 分钟检查 GitHub）。
 
 ## 目录
 
