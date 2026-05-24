@@ -58,12 +58,14 @@ if (-not $localHash -or -not $remoteHash) {
     exit 1
 }
 
+Write-Log "Local:  $($localHash.Substring(0, 7))  Remote: $($remoteHash.Substring(0, 7))"
+
 if ($localHash -eq $remoteHash) {
-    Write-Log "Up to date ($($localHash.Substring(0, 7))). Skip."
+    Write-Log "Up to date. Skip build. (Push on Mac first, then wait ~5 min)"
     exit 0
 }
 
-Write-Log "New commits $($localHash.Substring(0, 7)) -> $($remoteHash.Substring(0, 7)). Deploying..."
+Write-Log "New commits on GitHub. Deploying..."
 
 $deployScript = Join-Path $PSScriptRoot "deploy.ps1"
 & $deployScript
