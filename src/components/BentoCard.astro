@@ -1,0 +1,38 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  description?: string;
+  href?: string;
+  span?: 1 | 2;
+  tall?: boolean;
+  largeTitle?: boolean;
+}
+
+const {
+  label,
+  title,
+  description,
+  href,
+  span = 1,
+  tall = false,
+  largeTitle = false,
+} = Astro.props;
+
+const Tag = href ? 'article' : 'article';
+const classes = [
+  'bento-card',
+  span === 2 && 'bento-card--span-2',
+  tall && 'bento-card--tall',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag class={classes}>
+  {href && <a class="bento-card__link" href={href} aria-label={title} />}
+  {label && <span class="bento-card__label">{label}</span>}
+  <h2 class:list={['bento-card__title', largeTitle && 'bento-card__title--lg']}>{title}</h2>
+  {description && <p class="bento-card__desc">{description}</p>}
+  <slot />
+</Tag>

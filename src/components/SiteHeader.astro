@@ -1,0 +1,27 @@
+---
+import { site } from '../site.config';
+
+const pathname = Astro.url.pathname;
+
+const links = [
+  { href: '/', label: '首页' },
+  { href: '/blog/', label: '博客' },
+  { href: '/about/', label: '关于' },
+];
+---
+
+<header class="site-header">
+  <a href="/" class="site-logo">{site.name}</a>
+  <nav class="site-nav" aria-label="主导航">
+    {
+      links.map(({ href, label }) => (
+        <a
+          href={href}
+          aria-current={pathname === href || (href !== '/' && pathname.startsWith(href)) ? 'page' : undefined}
+        >
+          {label}
+        </a>
+      ))
+    }
+  </nav>
+</header>

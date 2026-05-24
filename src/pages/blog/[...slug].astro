@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { site } from '../../site.config';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString(site.locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<BaseLayout title={`${post.data.title} — ${site.name}`} description={post.data.description}>
+  <SiteHeader />
+  <article class="prose">
+    <h1>{post.data.title}</h1>
+    <p class="meta">
+      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+      {
+        post.data.tags.length > 0 && (
+          <>
+            {' · '}
+            {post.data.tags.join(', ')}
+          </>
+        )
+      }
+    </p>
+    <Content />
+  </article>
+  <p style="margin-top: 2rem">
+    <a href="/blog/">← 返回博客列表</a>
+  </p>
+  <SiteFooter />
+</BaseLayout>

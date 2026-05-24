@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { site } from '../../site.config';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString(site.locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+---
+
+<BaseLayout title={`博客 — ${site.name}`} description="文章与笔记">
+  <SiteHeader />
+  <h1 class="page-title">博客</h1>
+  <p class="page-lead">Markdown 驱动，推送到 main 分支即自动构建上线。</p>
+  <ul class="post-list">
+    {
+      posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.id}/`}>
+            <span class="post-list__title">{post.data.title}</span>
+            <time class="post-list__date" datetime={post.data.pubDate.toISOString()}>
+              {formatDate(post.data.pubDate)}
+            </time>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  {posts.length === 0 && <p class="page-lead">暂无文章，在 src/content/blog/ 添加 .md 文件即可。</p>}
+  <SiteFooter />
+</BaseLayout>

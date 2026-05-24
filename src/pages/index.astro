@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import BentoGrid from '../components/BentoGrid.astro';
+import BentoCard from '../components/BentoCard.astro';
+import { site } from '../site.config';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const latest = posts[0];
+---
+
+<BaseLayout title={site.title} description={site.description}>
+  <SiteHeader />
+  <BentoGrid>
+    <BentoCard
+      label="你好"
+      title={`我是 ${site.author}`}
+      description={site.description}
+      span={2}
+      tall
+      largeTitle
+    />
+    <BentoCard
+      label="博客"
+      title={latest ? latest.data.title : '写点什么'}
+      description={latest ? latest.data.description : '在 content/blog 添加 Markdown 即可'}
+      href={latest ? `/blog/${latest.id}/` : '/blog/'}
+      tall
+    />
+    <BentoCard
+      label="项目"
+      title="开源 & 实验"
+      description="把 GitHub 仓库链接填进 site.config 或新建卡片"
+      href={site.social.github}
+      span={2}
+    />
+    <BentoCard label="技术栈" title="Astro · 零 JS" description="静态生成 · 组件级按需水合 · 内置图片优化" />
+    <BentoCard label="部署" title="Push → CI → Nginx" description="GitHub Actions 构建，rsync 到家里服务器" href="/about/" />
+    <BentoCard
+      label="联系"
+      title="打个招呼"
+      description="邮箱与社交链接见关于页"
+      href="/about/"
+    />
+  </BentoGrid>
+  <SiteFooter />
+</BaseLayout>
