@@ -1,0 +1,13 @@
+# 公网云服务器 frps 示例
+# 部署: 复制为 frps.toml 后 docker run 或 systemd 启动
+
+bindPort = 7000
+
+# 可选：Dashboard
+# webServer.addr = "0.0.0.0"
+# webServer.port = 7500
+# webServer.user = "admin"
+# webServer.password = "CHANGE_ME"
+
+# 认证 token（frpc 需一致）
+auth.token = "CHANGE_ME_LONG_RANDOM"

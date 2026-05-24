@@ -1,0 +1,30 @@
+# 家里机器 frpc 示例
+# 将公网 80/443 映射到本地 Nginx 8080
+
+serverAddr = "YOUR_VPS_IP"
+serverPort = 7000
+
+auth.token = "CHANGE_ME_LONG_RANDOM"
+
+[[proxies]]
+name = "web-http"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 8080
+remotePort = 80
+
+# HTTPS：若 VPS 终止 TLS，可再映射 443 → 本地 8443，或直接用 Caddy 自动证书
+# [[proxies]]
+# name = "web-https"
+# type = "tcp"
+# localIP = "127.0.0.1"
+# localPort = 8443
+# remotePort = 443
+
+# 供 GitHub Actions rsync 的 SSH（可选）
+# [[proxies]]
+# name = "ssh"
+# type = "tcp"
+# localIP = "127.0.0.1"
+# localPort = 22
+# remotePort = 60022
