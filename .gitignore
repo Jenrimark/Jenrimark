@@ -28,6 +28,7 @@ lerna-debug.log*
 # frp 真实配置（保留 deploy/frp/*.example 模板）
 deploy/frp/frpc.toml
 deploy/frp/frps.toml
+deploy/webhook.token
 frpc.toml
 frps.toml
 **/FRP/frpc.toml

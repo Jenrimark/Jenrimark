@@ -1,0 +1,25 @@
+# On push to main: ping home Windows webhook (instant deploy, no 5-min poll)
+# Repo Secrets required:
+#   HOME_WEBHOOK_URL  e.g. http://gd02.frp0.cc:29100/webhook?token=YOUR_SECRET
+
+name: Trigger home deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping home server
+        env:
+          WEBHOOK_URL: ${{ secrets.HOME_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "Skip: HOME_WEBHOOK_URL secret not set"
+            exit 0
+          fi
+          echo "Triggering home deploy..."
+          curl -fsS -X POST "$WEBHOOK_URL"
+          echo "Done."
