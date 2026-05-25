@@ -89,6 +89,22 @@ img {
   color: var(--text);
 }
 
+.site-header__end {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.site-social-link {
+  display: inline-flex;
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+}
+
+.site-social-link:hover {
+  color: var(--accent);
+}
+
 /* Bento Grid */
 .bento-grid {
   display: grid;

@@ -7,7 +7,7 @@ export const site = {
   author: 'Jenrimark',
   locale: 'zh-CN',
   social: {
-    github: 'https://github.com/yourusername',
+    github: 'https://github.com/Jenrimark',
     email: 'mailto:hello@example.com',
   },
 } as const;

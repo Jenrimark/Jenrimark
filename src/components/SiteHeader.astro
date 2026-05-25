@@ -1,5 +1,6 @@
 ---
 import { site } from '../site.config';
+import GitHubIcon from './GitHubIcon.astro';
 
 const pathname = Astro.url.pathname;
 
@@ -12,16 +13,27 @@ const links = [
 
 <header class="site-header">
   <a href="/" class="site-logo">{site.name}</a>
-  <nav class="site-nav" aria-label="主导航">
-    {
-      links.map(({ href, label }) => (
-        <a
-          href={href}
-          aria-current={pathname === href || (href !== '/' && pathname.startsWith(href)) ? 'page' : undefined}
-        >
-          {label}
-        </a>
-      ))
-    }
-  </nav>
+  <div class="site-header__end">
+    <nav class="site-nav" aria-label="主导航">
+      {
+        links.map(({ href, label }) => (
+          <a
+            href={href}
+            aria-current={pathname === href || (href !== '/' && pathname.startsWith(href)) ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+    <a
+      href={site.social.github}
+      class="site-social-link"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="GitHub"
+    >
+      <GitHubIcon />
+    </a>
+  </div>
 </header>
