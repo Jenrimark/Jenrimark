@@ -10,8 +10,8 @@ tags: [astro, mvp]
 这套架构很轻：
 
 - **Astro** 生成纯静态页面，默认零客户端 JavaScript
-- **Git push** 触发 GitHub Actions 检测与打包
-- **rsync** 把 `dist/` 同步到家里服务器的 Nginx 目录
+- **Git push** 触发 GitHub Actions，再 curl 家里 Webhook
+- 家里 **git pull + npm run build**，Nginx 直接托管 `dist/`
 - **frp** 把公网流量穿透到本地
 
 ## 下一步

@@ -12,7 +12,7 @@ import { site } from '../site.config';
     <p class="meta">个人站点 MVP · Astro + Nginx + frp</p>
     <p>
       这是 <strong>{site.author}</strong> 的个人网站。架构刻意保持轻量：本地写 Markdown，<code>git push</code> 后由
-      CI 打包并同步到家里服务器，Nginx 托管静态文件，frp 负责公网穿透。
+      CI 校验后由家里 Webhook 拉代码并构建，Nginx 托管 <code>dist/</code>，frp 负责公网穿透。
     </p>
     <h2>链接</h2>
     <ul>
@@ -20,7 +20,7 @@ import { site } from '../site.config';
       <li><a href={site.social.email}>Email</a></li>
     </ul>
     <h2>维护</h2>
-    <p>站点配置集中在 <code>src/site.config.ts</code>。文章放在 <code>src/content/blog/</code>。部署说明见仓库 <code>docs/ARCHITECTURE.md</code>。</p>
+    <p>站点配置集中在 <code>src/site.config.ts</code>。文章放在 <code>src/content/blog/</code>。部署说明见 <code>docs/Windows-Git自动部署.md</code>。</p>
   </article>
   <SiteFooter />
 </BaseLayout>

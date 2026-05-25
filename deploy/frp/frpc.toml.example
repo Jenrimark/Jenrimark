@@ -21,10 +21,10 @@ remotePort = 80
 # localPort = 8443
 # remotePort = 443
 
-# 供 GitHub Actions rsync 的 SSH（可选）
+# 供 GitHub Actions 触发家里 Webhook（示例：23334 → 9100）
 # [[proxies]]
-# name = "ssh"
+# name = "deploy-webhook"
 # type = "tcp"
 # localIP = "127.0.0.1"
-# localPort = 22
-# remotePort = 60022
+# localPort = 9100
+# remotePort = 23334
