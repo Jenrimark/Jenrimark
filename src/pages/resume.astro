@@ -9,30 +9,79 @@ import { site } from '../site.config';
   <SiteHeader />
   <article class="prose">
     <h1>简历</h1>
-    <p class="meta">工作经历 · 技能 · 教育</p>
+    <p class="meta">吴汉东 · 软件工程 · 中国地质大学（武汉）</p>
 
-    <h2>技能</h2>
-    <ul>
-      <li>前端：HTML / CSS / TypeScript / Astro</li>
-      <li>后端与工具：Node.js、Git、CI/CD</li>
-      <li>部署：Nginx、Windows 自动化、frp</li>
-    </ul>
-
-    <h2>经历</h2>
+    <h2>教育背景</h2>
     <ul>
       <li>
-        <strong>开发者</strong> — 在此填写公司与时间<br />
-        简要描述职责与成果。
+        <strong>中国地质大学（武汉）</strong> — 软件工程系 / 本科<br />
+        2023.09 - 至今<br />
+        综合排名：专业前 10%；在校担任班长、学院学生会主席、党支部书记等，具备团队协作与项目组织经验<br />
+        主修课程：Java、数据库、Go、C++、数据结构、计算机网络、操作系统、算法分析与设计、软件工程基础、离散数学
       </li>
     </ul>
 
-    <h2>教育</h2>
+    <h2>荣誉奖项</h2>
     <ul>
-      <li>在此填写学校、专业与年份</li>
+      <li><strong>2025年</strong> MathorCup 数学应用挑战赛大数据竞赛 — 全国一等奖</li>
+      <li><strong>2025年</strong> 第十五届全国大学生电子商务"创新、创意及创业"挑战赛 — 省赛一等奖</li>
+      <li><strong>2025年</strong> 中国机器人大赛暨 RoboCup 机器人世界杯中国赛先进视觉赛-3D识别项目 — 省赛二等奖、全国三等奖</li>
+      <li><strong>2024年</strong> 全国大学生英语翻译大赛（NETCCS）— 省级二等奖</li>
+      <li>校级以上个人和团队荣誉奖项等 10 余项</li>
     </ul>
 
+    <h2>项目经历</h2>
+
+    <h3>LIttle-Wechat（即时通讯系统）</h3>
+    <p><strong>技术栈：</strong>SpringBoot + Vue3 + WebSocket + Redis + MySQL + Electron</p>
+    <ul>
+      <li>独立完成登录、聊天、好友列表等核心模块开发，实现基于 WebSocket 的实时消息通信，消息延迟控制在 100ms 内</li>
+      <li>使用 Redis 缓存用户在线状态与聊天数据，减少数据库重复查询压力约 60%</li>
+      <li>优化前端组件渲染与消息同步逻辑，页面响应速度提升约 40%</li>
+      <li>参与 Electron 桌面端打包与跨平台部署，提升客户端运行稳定性</li>
+    </ul>
+
+    <h3>灵犀旅行（AI 旅游平台）</h3>
+    <p><strong>技术栈：</strong>SpringBoot + Vue3 + React + Redis + ECharts + MySQL</p>
+    <ul>
+      <li>独立开发旅游路线推荐与景点展示模块，采用前后端分离架构</li>
+      <li>基于 Vue3/React 实现核心组件复用；集成百度地图与 ECharts 实现可视化</li>
+      <li>封装 RESTful 与 Axios 接口；引入 Redis 缓存并优化 MySQL 查询，接口响应提升至 300ms 内</li>
+    </ul>
+
+    <h3>蝶启新生 - 健康管理系统（全栈）</h3>
+    <p><strong>技术栈：</strong>Vue3 + Go（Gin）+ Redis + JWT + GORM + MySQL + Nginx</p>
+    <ul>
+      <li>采用 Vue3 + Gin 构建前后端分离架构，主导用户管理、健康数据等核心模块开发</li>
+      <li>基于 JWT 实现无状态认证与权限控制；使用 Redis 缓存高频数据，接口查询效率提升 50%</li>
+      <li>优化 SQL 与索引，核心接口响应由 900ms 降至 400ms</li>
+      <li>封装 ECharts 实现多维健康指标动态分析；基于 Nginx 完成前后端分离部署与反向代理</li>
+    </ul>
+
+    <h2>实习履历</h2>
+    <ul>
+      <li>
+        <strong>武汉美和易思有限公司 | 智慧就业 PDT</strong> — 前端/交互开发实习生<br />
+        2025.11 - 2026.04<br />
+        参与公司核心产品「AI 智慧就业系统」的迭代开发，主要负责「AI 数字人模拟面试」模块的前端交互与视觉优化。<br />
+        基于 Vue3 组件化架构设计模拟面试流程，实现状态路由、题目切换与用户答题交互的流畅衔接；<br />
+        利用 Canvas + 自定义动画实现模拟数字人表情提示与对话节奏控制；<br />
+        结合前端性能优化（代码分割、懒加载、虚拟滚动）处理历史面试记录与题库数据，页面渲染与交互响应速度提升约 30%。
+      </li>
+    </ul>
+
+    <h2>专业技能</h2>
+    <ul>
+      <li><strong>语言技能：</strong>英语 CET4</li>
+      <li><strong>前端开发：</strong>熟悉 Vue3、React、JS、TS/ArkTS、Vite、Axios、ECharts、Electron，具备组件化开发与前后端联调能力</li>
+      <li><strong>后端开发：</strong>熟悉 SpringBoot、MyBatis、Go/Gin 开发，了解 JWT 鉴权、WebSocket 实时通信等常见业务场景</li>
+      <li><strong>数据库与缓存：</strong>熟悉 MySQL 数据库设计与 SQL 优化，了解 Redis 缓存机制与常见数据结构</li>
+      <li><strong>其他：</strong>熟悉 Git、Maven 等开发工具，了解 Docker、Linux 基础操作</li>
+    </ul>
+
+    <h2>自我评价</h2>
     <p>
-      完整 PDF 或在线版可在此补充链接；需要时可把内容迁到 <code>src/content/</code> 用 Markdown 维护。
+      工作积极认真，细心负责，勇于迎接新挑战；具备良好的工程化开发意识，熟悉 Vue3/React 等现代前端技术栈，能够完成组件化与模块化开发。关注前端技术演进与 AI 辅助开发（Vibe Coding），在项目中持续实践代码复用与开发效率优化。具备快速学习新技术并落地到实际项目的能力。
     </p>
   </article>
   <SiteFooter />
