@@ -22,7 +22,8 @@ jobs:
           fi
           echo "Triggering home deploy..."
           # Empty POST without Content-Length causes HTTP 411 via some frp proxies
-          curl -fsS -X POST "$WEBHOOK_URL" \
+          # Fail fast if home webhook/frpc is down (default curl has no timeout → job hangs)
+          curl -fsS --connect-timeout 60 --max-time 120 -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{}'
           echo "Done."

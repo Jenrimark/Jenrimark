@@ -6,6 +6,10 @@ serverPort = 7000
 
 auth.token = "CHANGE_ME_LONG_RANDOM"
 
+# Keep control connection alive; avoids stale 23334 tunnel after idle (TCP connects, no HTTP response)
+heartbeatInterval = 30
+heartbeatTimeout = 90
+
 [[proxies]]
 name = "web-http"
 type = "tcp"

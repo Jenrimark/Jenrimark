@@ -55,48 +55,61 @@ Write-Host "Ctrl+C to stop."
 Write-Host ""
 
 while ($listener.IsListening) {
-    $context = $listener.GetContext()
-    $request = $context.Request
-    $response = $context.Response
+    $context = $null
+    try {
+        $context = $listener.GetContext()
+        $request = $context.Request
+        $response = $context.Response
 
-    $code = 200
-    $body = "ok"
+        $code = 200
+        $body = "ok"
 
-    if ($request.HttpMethod -ne "POST") {
-        $code = 405
-        $body = "POST only"
-    }
-    elseif ($request.Url.AbsolutePath -ne "/webhook") {
-        $code = 404
-        $body = "not found"
-    }
-    else {
-        $qToken = Get-QueryToken $request
-        if ($qToken -cne $Token) {
-            $code = 401
-            $body = "unauthorized"
-            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 401 mismatch (query len=$($qToken.Length), expected len=$($Token.Length))"
-            if ($qToken.Length -eq 0) {
-                Write-Host "  Hint: add ?token=... to URL"
-            }
+        if ($request.Url.AbsolutePath -eq "/health") {
+            $body = "ok"
+        }
+        elseif ($request.HttpMethod -ne "POST") {
+            $code = 405
+            $body = "POST only"
+        }
+        elseif ($request.Url.AbsolutePath -ne "/webhook") {
+            $code = 404
+            $body = "not found"
         }
         else {
-            if ($request.HasEntityBody) {
-                $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
-                $reader.ReadToEnd() | Out-Null
-                $reader.Close()
+            $qToken = Get-QueryToken $request
+            if ($qToken -cne $Token) {
+                $code = 401
+                $body = "unauthorized"
+                Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 401 mismatch (query len=$($qToken.Length), expected len=$($Token.Length))"
+                if ($qToken.Length -eq 0) {
+                    Write-Host "  Hint: add ?token=... to URL"
+                }
             }
-            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
-            Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
-                "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1
-            ) | Out-Null
-            $body = "deploy started"
+            else {
+                if ($request.HasEntityBody) {
+                    $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+                    $reader.ReadToEnd() | Out-Null
+                    $reader.Close()
+                }
+                Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
+                Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
+                    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1
+                ) | Out-Null
+                $body = "deploy started"
+            }
+        }
+
+        $response.StatusCode = $code
+        $buf = [System.Text.Encoding]::UTF8.GetBytes($body)
+        $response.ContentLength64 = $buf.Length
+        $response.OutputStream.Write($buf, 0, $buf.Length)
+    }
+    catch {
+        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Request error: $_"
+    }
+    finally {
+        if ($null -ne $context) {
+            try { $context.Response.Close() } catch {}
         }
     }
-
-    $response.StatusCode = $code
-    $buf = [System.Text.Encoding]::UTF8.GetBytes($body)
-    $response.ContentLength64 = $buf.Length
-    $response.OutputStream.Write($buf, 0, $buf.Length)
-    $response.Close()
 }
