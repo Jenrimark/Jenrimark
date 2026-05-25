@@ -12,7 +12,7 @@ import { profile } from '../data/profile';
 
 <BaseLayout title={`简介 — ${site.name}`} description={`关于 ${site.author}`}>
   <SiteHeader />
-  <div class="page-content">
+  <div class="page-content page-panel">
     <PageHeader label="关于我" title={profile.fullName} lead={profile.tagline} />
     <p class="page-intro">{profile.intro}</p>
     <p class="page-subtitle">{profile.subtitle}</p>

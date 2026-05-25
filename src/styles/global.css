@@ -324,7 +324,14 @@ img {
 
 /* ── 页面通用 ── */
 .page-content {
-  max-width: 960px;
+  max-width: var(--max-width);
+}
+
+.page-panel {
+  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
 .page-header__label {
