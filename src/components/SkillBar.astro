@@ -1,0 +1,32 @@
+---
+interface Skill {
+  name: string;
+  level: number;
+}
+
+interface Props {
+  skills: readonly Skill[];
+  title?: string;
+}
+
+const { skills, title = '专业技能' } = Astro.props;
+---
+
+<section class="skill-section">
+  <h2 class="skill-section__title">{title}</h2>
+  <ul class="skill-list">
+    {
+      skills.map((skill) => (
+        <li class="skill-bar">
+          <div class="skill-bar__head">
+            <span class="skill-bar__name">{skill.name}</span>
+            <span class="skill-bar__level">{skill.level}%</span>
+          </div>
+          <div class="skill-bar__track" role="presentation">
+            <div class="skill-bar__fill" style={`width: ${skill.level}%`} />
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>

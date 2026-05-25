@@ -1,0 +1,33 @@
+---
+interface Project {
+  title: string;
+  description: string;
+  href: string;
+  meta: string;
+  color: string;
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<a
+  class="project-card"
+  href={project.href}
+  target="_blank"
+  rel="noopener noreferrer"
+  style={`--project-color: ${project.color}`}
+>
+  <div class="project-card__icon" aria-hidden="true">
+    <span>{project.title.charAt(0)}</span>
+  </div>
+  <div class="project-card__body">
+    <h3 class="project-card__title">{project.title}</h3>
+    <p class="project-card__desc">{project.description}</p>
+    <p class="project-card__meta">{project.meta}</p>
+  </div>
+  <span class="project-card__arrow" aria-hidden="true">→</span>
+</a>

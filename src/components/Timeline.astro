@@ -1,0 +1,35 @@
+---
+interface TimelineItem {
+  role: string;
+  org: string;
+  period: string;
+  desc: string;
+}
+
+interface Props {
+  title: string;
+  items: readonly TimelineItem[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<section class="timeline-section">
+  <h2 class="timeline-section__title">{title}</h2>
+  <ol class="timeline">
+    {
+      items.map((item) => (
+        <li class="timeline__item">
+          <div class="timeline__head">
+            <h3 class="timeline__role">{item.role}</h3>
+            <div class="timeline__meta">
+              <span class="timeline__period">{item.period}</span>
+              <span class="timeline__org">{item.org}</span>
+            </div>
+          </div>
+          <p class="timeline__desc">{item.desc}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>

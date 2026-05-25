@@ -2,26 +2,29 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import PageHeader from '../components/PageHeader.astro';
+import FeaturedProject from '../components/FeaturedProject.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import InfoTable from '../components/InfoTable.astro';
 import { site } from '../site.config';
+import { profile } from '../data/profile';
 ---
 
 <BaseLayout title={`简介 — ${site.name}`} description={`关于 ${site.author}`}>
   <SiteHeader />
-  <article class="prose">
-    <h1>简介</h1>
-    <p class="meta">软件工程 · 中国地质大学（武汉）</p>
-    <p>
-      我是 <strong>{site.author}</strong>，中国地质大学（武汉）软件工程专业本科在读，综合排名专业前 10%。在校担任班长、学院学生会主席、党支部书记等职务。
-    </p>
-    <p>
-      技术栈以前后端开发为主：前端熟悉 Vue3、React、TypeScript；后端熟悉 SpringBoot、Go/Gin；数据库方面熟悉 MySQL 与 Redis。
-    </p>
-    <h2>现在在做什么</h2>
-    <ul>
-      <li>在校学习软件工程相关课程，主修 Java、Go、数据结构、计算机网络等</li>
-      <li>参与竞赛与项目实践，积累全栈开发经验</li>
-      <li>关注前端技术演进与 AI 辅助开发（Vibe Coding）</li>
-    </ul>
-  </article>
+  <div class="page-content">
+    <PageHeader label="关于我" title={profile.fullName} lead={profile.tagline} />
+    <p class="page-intro">{profile.intro}</p>
+    <p class="page-subtitle">{profile.subtitle}</p>
+
+    <FeaturedProject {...profile.featuredProject} />
+
+    <section class="page-block">
+      <h2 class="page-block__title">我能提供什么</h2>
+      <FeatureGrid items={profile.features} />
+    </section>
+
+    <InfoTable items={profile.info} />
+  </div>
   <SiteFooter />
 </BaseLayout>

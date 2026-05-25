@@ -1,0 +1,36 @@
+---
+import ProjectCard from './ProjectCard.astro';
+
+interface Project {
+  title: string;
+  description: string;
+  href: string;
+  meta: string;
+  color: string;
+}
+
+interface Props {
+  title: string;
+  projects: readonly Project[];
+}
+
+const { title, projects } = Astro.props;
+
+const sectionIcons: Record<string, string> = {
+  开源项目: '⌘',
+  可视化作品: '▤',
+  实用工具: '⚙',
+};
+---
+
+<section class="project-section">
+  <h2 class="project-section__title">
+    <span class="project-section__icon" aria-hidden="true">{sectionIcons[title] ?? '◆'}</span>
+    {title}
+  </h2>
+  <div class="project-section__grid">
+    {projects.map((project) => (
+      <ProjectCard project={project} />
+    ))}
+  </div>
+</section>

@@ -1,0 +1,34 @@
+---
+interface InfoItem {
+  label: string;
+  value: string;
+  href?: string;
+}
+
+interface Props {
+  items: readonly InfoItem[];
+  title?: string;
+}
+
+const { items, title = '核心信息' } = Astro.props;
+---
+
+<section class="info-table">
+  <h2 class="info-table__title">{title}</h2>
+  <dl class="info-table__list">
+    {
+      items.map(({ label, value, href }) => (
+        <div class="info-table__row">
+          <dt>{label}</dt>
+          <dd>
+            {href ? (
+              <a href={href}>{value}</a>
+            ) : (
+              value
+            )}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>

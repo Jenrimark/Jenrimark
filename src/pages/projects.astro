@@ -2,44 +2,30 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ProjectSection from '../components/ProjectSection.astro';
 import { site } from '../site.config';
-
-const projects = [
-  {
-    title: 'Jenrimark 个人站',
-    description: 'Astro 静态站 · Git push 触发家里 Webhook 自动部署',
-    href: site.social.github,
-  },
-  {
-    title: '在此添加项目',
-    description: '标题、简介与 GitHub / 演示链接',
-    href: site.social.github,
-  },
-];
+import { profile } from '../data/profile';
 ---
 
 <BaseLayout title={`项目 — ${site.name}`} description={`${site.author} 的项目与开源`}>
   <SiteHeader />
-  <article class="prose">
-    <h1>项目</h1>
-    <p class="meta">开源仓库、实验与 side project</p>
-    <ul class="post-list project-list">
-      {
-        projects.map((project) => (
-          <li>
-            <a href={project.href} target="_blank" rel="noopener noreferrer">
-              <span>
-                <span class="post-list__title">{project.title}</span>
-                <p class="project-list__desc">{project.description}</p>
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <p>
-      更多仓库见 <a href={site.social.github}>GitHub</a>；项目列表可在本页 frontmatter 或 <code>site.config.ts</code> 中维护。
+  <div class="page-content">
+    <PageHeader
+      label="项目资源库"
+      title="作品与实验"
+      lead="开源仓库、可视化项目与实用工具集合"
+    />
+
+    {
+      profile.projectSections.map((section) => (
+        <ProjectSection title={section.title} projects={section.projects} />
+      ))
+    }
+
+    <p class="page-note">
+      更多仓库见 <a href={site.social.github}>GitHub</a>；项目数据在 <code>src/data/profile.ts</code> 中维护。
     </p>
-  </article>
+  </div>
   <SiteFooter />
 </BaseLayout>

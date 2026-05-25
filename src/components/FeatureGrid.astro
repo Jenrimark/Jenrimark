@@ -1,0 +1,34 @@
+---
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  items: readonly Feature[];
+}
+
+const { items } = Astro.props;
+
+const icons: Record<string, string> = {
+  stack: '⬡',
+  bolt: '⚡',
+  chart: '▤',
+  award: '★',
+};
+---
+
+<div class="feature-grid">
+  {
+    items.map((item) => (
+      <article class="feature-card">
+        <div class="feature-card__icon" aria-hidden="true">
+          {icons[item.icon] ?? '◆'}
+        </div>
+        <h3 class="feature-card__title">{item.title}</h3>
+        <p class="feature-card__desc">{item.description}</p>
+      </article>
+    ))
+  }
+</div>
