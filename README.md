@@ -22,7 +22,7 @@ npm run preview  # 预览构建结果
 **Mac 开发 + Windows 家里？** 按 [docs/傻瓜教程-Mac开发-Windows家里.md](docs/傻瓜教程-Mac开发-Windows家里.md) 一步步做即可。
 
 **家里 Windows 用 Git 拉代码自动构建？** 见 [docs/Windows-Git自动部署.md](docs/Windows-Git自动部署.md)。  
-**push 后立刻更新？** 配置 Webhook：`deploy/windows/run-webhook.bat` + GitHub Secret `HOME_WEBHOOK_URL`（见 [Windows-Git自动部署.md](docs/Windows-Git自动部署.md)）。备用：`watch-update.bat` 每 5 分钟轮询。
+**push 后立刻更新？** Webhook + `HOME_WEBHOOK_URL`（见 [Windows-Git自动部署.md](docs/Windows-Git自动部署.md)）。家里 `git pull` 报 TLS 错误 → 运行 `deploy/windows/setup-ssh.bat`。
 
 ## 目录
 
