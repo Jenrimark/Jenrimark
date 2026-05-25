@@ -2,8 +2,7 @@
 # Default: http://127.0.0.1:9100/webhook?token=YOUR_SECRET
 
 param(
-    [int]$Port = 9100,
-    [string]$Token = $env:DEPLOY_WEBHOOK_TOKEN
+    [int]$Port = 9100
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,11 +10,31 @@ $RepoRoot = if ($env:REPO_ROOT) { $env:REPO_ROOT } else { "E:\Desktop\Jenrimark"
 $DeployPs1 = Join-Path $RepoRoot "deploy\scripts\deploy.ps1"
 $TokenFile = Join-Path $RepoRoot "deploy\webhook.token"
 
-if (-not $Token -and (Test-Path $TokenFile)) {
-    $Token = (Get-Content $TokenFile -Raw).Trim()
+function Read-TokenFromFile([string]$path) {
+    $bytes = [System.IO.File]::ReadAllBytes($path)
+    $text = [System.Text.Encoding]::UTF8.GetString($bytes)
+    return $text.Trim().Trim([char]0xFEFF)
+}
+
+function Get-QueryToken([System.Net.HttpListenerRequest]$request) {
+    $raw = $request.QueryString["token"]
+    if ([string]::IsNullOrEmpty($raw)) { return "" }
+    return [System.Uri]::UnescapeDataString($raw).Trim()
+}
+
+# Load token: prefer webhook.token file; env DEPLOY_WEBHOOK_TOKEN overrides if set
+$Token = $null
+$tokenSource = "none"
+if (Test-Path $TokenFile) {
+    $Token = Read-TokenFromFile $TokenFile
+    $tokenSource = "file"
+}
+if (-not [string]::IsNullOrWhiteSpace($env:DEPLOY_WEBHOOK_TOKEN)) {
+    $Token = $env:DEPLOY_WEBHOOK_TOKEN.Trim().Trim([char]0xFEFF)
+    $tokenSource = "env DEPLOY_WEBHOOK_TOKEN"
 }
 if (-not $Token) {
-    throw "Set DEPLOY_WEBHOOK_TOKEN or create deploy\webhook.token (see webhook.token.example)"
+    throw "Create deploy\webhook.token (see webhook.token.example)"
 }
 
 if (-not (Test-Path $DeployPs1)) {
@@ -29,6 +48,8 @@ $listener.Start()
 
 Write-Host "Webhook server: $prefix"
 Write-Host "POST /webhook?token=***"
+Write-Host "Token source: $tokenSource (length $($Token.Length))"
+Write-Host "Token file:   $TokenFile"
 Write-Host "Repo: $RepoRoot"
 Write-Host "Ctrl+C to stop."
 Write-Host ""
@@ -49,22 +70,28 @@ while ($listener.IsListening) {
         $code = 404
         $body = "not found"
     }
-    elseif ($request.QueryString["token"] -ne $Token) {
-        $code = 401
-        $body = "unauthorized"
-    }
     else {
-        # Consume POST body (required when Content-Length is set)
-        if ($request.HasEntityBody) {
-            $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
-            $reader.ReadToEnd() | Out-Null
-            $reader.Close()
+        $qToken = Get-QueryToken $request
+        if ($qToken -cne $Token) {
+            $code = 401
+            $body = "unauthorized"
+            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 401 mismatch (query len=$($qToken.Length), expected len=$($Token.Length))"
+            if ($qToken.Length -eq 0) {
+                Write-Host "  Hint: add ?token=... to URL"
+            }
         }
-        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
-        Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
-            "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1
-        ) | Out-Null
-        $body = "deploy started"
+        else {
+            if ($request.HasEntityBody) {
+                $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+                $reader.ReadToEnd() | Out-Null
+                $reader.Close()
+            }
+            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
+            Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
+                "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1
+            ) | Out-Null
+            $body = "deploy started"
+        }
     }
 
     $response.StatusCode = $code
