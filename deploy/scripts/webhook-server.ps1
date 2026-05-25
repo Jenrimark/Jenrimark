@@ -54,6 +54,12 @@ while ($listener.IsListening) {
         $body = "unauthorized"
     }
     else {
+        # Consume POST body (required when Content-Length is set)
+        if ($request.HasEntityBody) {
+            $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+            $reader.ReadToEnd() | Out-Null
+            $reader.Close()
+        }
         Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
         Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
             "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1

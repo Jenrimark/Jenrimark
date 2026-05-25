@@ -21,5 +21,8 @@ jobs:
             exit 0
           fi
           echo "Triggering home deploy..."
-          curl -fsS -X POST "$WEBHOOK_URL"
+          # Empty POST without Content-Length causes HTTP 411 via some frp proxies
+          curl -fsS -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{}'
           echo "Done."
