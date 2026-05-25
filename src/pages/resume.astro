@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { site } from '../site.config';
+---
+
+<BaseLayout title={`简历 — ${site.name}`} description={`${site.author} 的简历`}>
+  <SiteHeader />
+  <article class="prose">
+    <h1>简历</h1>
+    <p class="meta">工作经历 · 技能 · 教育</p>
+
+    <h2>技能</h2>
+    <ul>
+      <li>前端：HTML / CSS / TypeScript / Astro</li>
+      <li>后端与工具：Node.js、Git、CI/CD</li>
+      <li>部署：Nginx、Windows 自动化、frp</li>
+    </ul>
+
+    <h2>经历</h2>
+    <ul>
+      <li>
+        <strong>开发者</strong> — 在此填写公司与时间<br />
+        简要描述职责与成果。
+      </li>
+    </ul>
+
+    <h2>教育</h2>
+    <ul>
+      <li>在此填写学校、专业与年份</li>
+    </ul>
+
+    <p>
+      完整 PDF 或在线版可在此补充链接；需要时可把内容迁到 <code>src/content/</code> 用 Markdown 维护。
+    </p>
+  </article>
+  <SiteFooter />
+</BaseLayout>

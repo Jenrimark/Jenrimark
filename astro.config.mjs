@@ -7,4 +7,7 @@ import mdx from '@astrojs/mdx';
 export default defineConfig({
   site: process.env.SITE_URL || 'https://yourdomain.com',
   integrations: [mdx()],
+  redirects: {
+    '/about/': '/intro/',
+  },
 });

@@ -5,20 +5,13 @@ import SiteFooter from '../components/SiteFooter.astro';
 import BentoGrid from '../components/BentoGrid.astro';
 import BentoCard from '../components/BentoCard.astro';
 import { site } from '../site.config';
-import { getCollection } from 'astro:content';
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
-
-const latest = posts[0];
 ---
 
 <BaseLayout title={site.title} description={site.description}>
   <SiteHeader />
   <BentoGrid>
     <BentoCard
-      label="你好"
+      label="主页"
       title={`我是 ${site.author}`}
       description={site.description}
       span={2}
@@ -26,26 +19,30 @@ const latest = posts[0];
       largeTitle
     />
     <BentoCard
-      label="博客"
-      title={latest ? latest.data.title : '写点什么'}
-      description={latest ? latest.data.description : '在 content/blog 添加 Markdown 即可'}
-      href={latest ? `/blog/${latest.id}/` : '/blog/'}
+      label="简介"
+      title="关于我"
+      description="背景、方向与现在在做什么"
+      href="/intro/"
       tall
+    />
+    <BentoCard
+      label="简历"
+      title="经历与技能"
+      description="工作、教育与能力概览"
+      href="/resume/"
     />
     <BentoCard
       label="项目"
       title="开源 & 实验"
-      description="把 GitHub 仓库链接填进 site.config 或新建卡片"
-      href={site.social.github}
+      description="仓库、side project 与作品"
+      href="/projects/"
       span={2}
     />
-    <BentoCard label="技术栈" title="Astro · 零 JS" description="静态生成 · 组件级按需水合 · 内置图片优化" />
-    <BentoCard label="部署" title="Push → Webhook → Nginx" description="GitHub 触发家里 git pull + build" href="/about/" />
     <BentoCard
       label="联系"
       title="打个招呼"
-      description="邮箱与社交链接见关于页"
-      href="/about/"
+      description="邮箱与社交链接"
+      href="/contact/"
     />
   </BentoGrid>
   <SiteFooter />
