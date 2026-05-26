@@ -97,6 +97,12 @@ img {
   gap: 1.25rem;
 }
 
+.site-header__icons {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
 .site-social-link {
   display: inline-flex;
   color: var(--text-muted);

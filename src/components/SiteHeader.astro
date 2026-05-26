@@ -1,6 +1,7 @@
 ---
 import { site } from '../site.config';
 import GitHubIcon from './GitHubIcon.astro';
+import ViewIcon from './ViewIcon.astro';
 
 const pathname = Astro.url.pathname;
 
@@ -28,14 +29,20 @@ const links = [
         ))
       }
     </nav>
-    <a
-      href={site.social.github}
-      class="site-social-link"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="GitHub"
-    >
-      <GitHubIcon />
-    </a>
+    <div class="site-header__icons">
+      <a href="/view/" class="site-social-link" aria-label="View 起始页" title="View 起始页">
+        <ViewIcon />
+      </a>
+      <a
+        href={site.social.github}
+        class="site-social-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+        title="GitHub"
+      >
+        <GitHubIcon />
+      </a>
+    </div>
   </div>
 </header>

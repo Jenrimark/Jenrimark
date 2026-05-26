@@ -4,14 +4,15 @@ export const profile = {
   tagline: '软件工程 · 全栈开发 · 竞赛实践',
   subtitle: '地大在读 · 专业前 10% · 前后端与工程化',
   intro:
-    '中国地质大学（武汉）软件工程专业本科在读，综合排名专业前 10%。在校担任班长、学院学生会主席、党支部书记，具备团队协作与项目组织经验。关注 Vue3/React 现代前端与 SpringBoot/Go 后端，持续实践组件化开发与性能优化。',
+    '中国地质大学（武汉）软件工程专业本科在读，综合排名专业前 10%。在校担任班长、学院学生会主席、党支部书记，具备团队协作与项目组织经验。主修 Java、数据库、Go、C++、数据结构、计算机网络、操作系统、算法分析与设计、软件工程基础、离散数学等课程。关注 Vue3/React 现代前端与 SpringBoot/Go 后端，持续实践组件化开发与性能优化。',
   info: [
     { label: '姓名', value: '吴汉东' },
     { label: '生日', value: '2004 年 11 月 19 日' },
     { label: '城市', value: '武汉' },
     { label: '邮箱', value: '2303532728@qq.com', href: 'mailto:2303532728@qq.com' },
     { label: '电话', value: '18471609769' },
-    { label: '面貌', value: '中共党员' },
+    { label: '政治面貌', value: '中共党员' },
+    { label: 'GitHub', value: 'github.com/Jenrimark', href: 'https://github.com/Jenrimark' },
     { label: '状态', value: '本科在读 · 寻求实习机会' },
   ],
   features: [
@@ -50,11 +51,12 @@ export const profile = {
     meta: 'SpringBoot + Vue3 + Electron',
   },
   skills: [
-    { name: '前端开发（Vue3 / React / TS）', level: 88 },
-    { name: '后端开发（SpringBoot / Go）', level: 82 },
+    { name: '前端开发（Vue3 / React / TS / ArkTS）', level: 88 },
+    { name: '后端开发（SpringBoot / MyBatis / Go / Gin）', level: 82 },
+    { name: '实时通信与鉴权（WebSocket / JWT）', level: 80 },
     { name: '数据库与缓存（MySQL / Redis）', level: 80 },
-    { name: '工程化与部署（Git / Docker / Nginx）', level: 75 },
-    { name: '英语（CET4）', level: 70 },
+    { name: '工程化与部署（Git / Maven / Docker / Nginx / Linux）', level: 75 },
+    { name: '英语（CET-4）', level: 70 },
   ],
   timeline: {
     education: [
@@ -62,7 +64,7 @@ export const profile = {
         role: '软件工程 · 本科',
         org: '中国地质大学（武汉）',
         period: '2023.09 — 至今',
-        desc: '综合排名专业前 10%；班长、学院学生会主席、党支部书记。主修 Java、Go、数据结构、计算机网络、操作系统、软件工程等。',
+        desc: '综合排名专业前 10%；班长、学院学生会主席、党支部书记。主修 Java、数据库、Go、C++、数据结构、计算机网络、操作系统、算法分析与设计、软件工程基础、离散数学等。',
       },
     ],
     work: [
@@ -70,7 +72,7 @@ export const profile = {
         role: '前端 / 交互开发实习生',
         org: '武汉美和易思 · 智慧就业 PDT',
         period: '2025.11 — 2026.04',
-        desc: '负责「AI 数字人模拟面试」模块前端交互与视觉优化；Vue3 状态路由、Canvas 数字人动画、虚拟滚动等，页面响应提升约 30%。',
+        desc: '参与「AI 智慧就业系统」迭代，负责「AI 数字人模拟面试」模块前端交互与视觉优化。Vue3 状态路由与答题流程、Canvas 口型与表情动画、CSS3 过渡与懒加载/虚拟滚动，页面响应提升约 30%。',
       },
     ],
     awards: [
@@ -93,15 +95,19 @@ export const profile = {
         desc: '3D 识别项目。',
       },
       {
-        role: '全国大学生英语翻译大赛',
+        role: '全国大学生英语翻译大赛（NETCCS）',
         org: '省级二等奖',
         period: '2024',
-        desc: 'NETCCS。',
+      },
+      {
+        role: '校级及以上荣誉',
+        org: '个人与团队奖项 10 余项',
+        period: '2023 — 2025',
       },
     ],
   },
   selfEval:
-    '工作积极认真，细心负责，勇于迎接新挑战。熟悉 Vue3/React 现代前端技术栈，关注 AI 辅助开发（Vibe Coding），具备快速学习并落地到实际项目的能力。',
+    '工作积极认真，细心负责，勇于迎接新挑战；具备良好的工程化开发意识，熟悉 Vue3/React 等现代前端技术栈，能够完成组件化与模块化开发。关注前端技术演进与 AI 辅助开发（Vibe Coding），在项目中持续实践代码复用与开发效率优化，具备快速学习新技术并落地到实际项目的能力。',
   projectSections: [
     {
       id: 'opensource',
@@ -110,9 +116,10 @@ export const profile = {
       projects: [
         {
           title: 'LIttle-Wechat',
-          description: '即时通讯系统，WebSocket 实时消息，Redis 在线状态，Electron 跨平台桌面端。',
+          description:
+            '独立完成登录、聊天、好友列表等核心模块；WebSocket 实时通信（延迟 <100ms），Redis 缓存在线状态与聊天数据，数据库查询压力降约 60%，Electron 跨平台桌面端。',
           href: 'https://github.com/Jenrimark',
-          meta: 'SpringBoot · Vue3 · Electron',
+          meta: 'SpringBoot · Vue3 · WebSocket · Redis',
           color: '#e07a4f',
         },
         {
@@ -131,9 +138,10 @@ export const profile = {
       projects: [
         {
           title: '灵犀旅行',
-          description: 'AI 旅游平台，百度地图 + ECharts 路线与景点可视化，Redis 缓存接口响应 300ms 内。',
+          description:
+            'AI 旅游平台，独立开发路线推荐与景点展示；百度地图 + ECharts 可视化，Redis 缓存与 MySQL 查询优化，接口响应 300ms 内。',
           href: 'https://github.com/Jenrimark',
-          meta: 'Vue3 · ECharts · MySQL',
+          meta: 'SpringBoot · Vue3 · React · ECharts',
           color: '#5aab8c',
         },
       ],
@@ -145,9 +153,10 @@ export const profile = {
       projects: [
         {
           title: '蝶启新生 · 健康管理',
-          description: 'Vue3 + Go/Gin 全栈，JWT 鉴权，ECharts 多维健康指标，Nginx 反向代理部署。',
+          description:
+            'Vue3 + Go/Gin 全栈，JWT 无状态鉴权；Redis 缓存使查询效率提升约 50%，核心接口由 900ms 降至 400ms；ECharts 多维健康分析，Nginx 反向代理部署。',
           href: 'https://github.com/Jenrimark',
-          meta: 'Go · Vue3 · Redis',
+          meta: 'Gin · Vue3 · JWT · GORM',
           color: '#b07ad9',
         },
         {

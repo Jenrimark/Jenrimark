@@ -1,0 +1,116 @@
+---
+import ViewLayout from '../layouts/ViewLayout.astro';
+import { site } from '../site.config';
+import { searchEngines } from '../data/view-search';
+---
+
+<ViewLayout title={`View — ${site.name}`}>
+  <div class="view-page">
+    <header class="view-topbar">
+      <a href="/">← {site.name}</a>
+      <time id="view-clock" class="view-clock" datetime=""></time>
+    </header>
+
+    <section class="view-hero" aria-label="搜索">
+      <h1 class="view-greeting" id="view-greeting">你好</h1>
+
+      <div class="view-search-wrap">
+        <form id="view-search-form" class="view-search-form" role="search">
+          <input
+            id="view-search-input"
+            class="view-search-input"
+            type="search"
+            name="q"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-label="搜索"
+          />
+          <button type="submit" class="view-search-submit">搜索</button>
+        </form>
+
+        <div id="view-engines" class="view-engines" role="group" aria-label="搜索引擎">
+          {
+            searchEngines.map((engine) => (
+              <button
+                type="button"
+                class="view-engine"
+                data-engine={engine.id}
+                aria-pressed={engine.default ? 'true' : 'false'}
+              >
+                {engine.label}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <aside class="view-ext-banner" id="view-ext-banner" aria-label="扩展安装">
+      <div class="view-ext-banner__main">
+        <div class="view-ext-banner__text">
+          <strong>书签自动同步</strong>
+          <span>需安装 Chrome 扩展（仅读取本机书签，不上传服务器）</span>
+        </div>
+        <a
+          class="view-btn view-btn--accent"
+          href="/downloads/jenrimark-view-extension.zip"
+          download="jenrimark-view-extension.zip"
+        >
+          下载扩展 (.zip)
+        </a>
+      </div>
+      <details class="view-ext-install">
+        <summary>安装步骤（换设备可重新下载）</summary>
+        <ol>
+          <li>下载并解压 zip，确认文件夹内有 <code>manifest.json</code></li>
+          <li>Chrome 打开 <code>chrome://extensions</code>，开启「开发者模式」</li>
+          <li>点击「加载已解压的扩展程序」，选择解压后的文件夹</li>
+          <li>刷新本页，状态应变为「已连接浏览器扩展」</li>
+        </ol>
+      </details>
+    </aside>
+
+    <section class="view-bookmarks-area" aria-label="书签">
+      <div class="view-toolbar">
+        <div>
+          <h2>书签</h2>
+          <p id="view-status" class="view-status">加载中…</p>
+        </div>
+        <div class="view-toolbar-actions">
+          <button type="button" id="view-folder-toggle" class="view-btn" aria-expanded="false">
+            文件夹筛选
+          </button>
+          <button type="button" id="view-folder-select-all" class="view-btn">全选</button>
+          <button type="button" id="view-folder-clear" class="view-btn">显示全部</button>
+        </div>
+      </div>
+
+      <div id="view-folder-panel" class="view-folder-panel">
+        <p class="view-folder-panel__hint">
+          勾选要显示的文件夹；不选或全选则显示全部。筛选偏好会保存在本机。
+        </p>
+        <div id="view-folder-list" class="view-folder-list"></div>
+      </div>
+
+      <div id="view-bookmarks" class="view-bookmarks">
+        <p class="view-empty">正在加载书签…</p>
+      </div>
+    </section>
+  </div>
+</ViewLayout>
+
+<script>
+  import '../scripts/view-page';
+
+  const greetEl = document.getElementById('view-greeting');
+  if (greetEl) {
+    const h = new Date().getHours();
+    let text = '晚上好';
+    if (h < 6) text = '夜深了';
+    else if (h < 12) text = '早上好';
+    else if (h < 14) text = '中午好';
+    else if (h < 18) text = '下午好';
+    greetEl.textContent = text;
+  }
+</script>

@@ -1,0 +1,370 @@
+import {
+  searchEngines,
+  defaultSearchEngineId,
+  STORAGE_ENGINE,
+  STORAGE_FOLDERS,
+  type SearchEngineId,
+} from '../data/view-search';
+import { sampleBookmarkTree, type ViewBookmarkNode } from '../data/view-bookmarks.sample';
+
+const MSG_SOURCE_PAGE = 'jenrimark-view';
+const MSG_SOURCE_EXT = 'jenrimark-view-ext';
+
+interface BookmarkLink {
+  id: string;
+  title: string;
+  url: string;
+}
+
+interface BookmarkSection {
+  folderId: string;
+  folderTitle: string;
+  links: BookmarkLink[];
+}
+
+function getEngine(id: SearchEngineId) {
+  return searchEngines.find((e) => e.id === id) ?? searchEngines[0];
+}
+
+function loadEngineId(): SearchEngineId {
+  const stored = localStorage.getItem(STORAGE_ENGINE);
+  if (stored && searchEngines.some((e) => e.id === stored)) {
+    return stored as SearchEngineId;
+  }
+  return defaultSearchEngineId;
+}
+
+function loadFolderFilter(): Set<string> {
+  try {
+    const raw = localStorage.getItem(STORAGE_FOLDERS);
+    if (!raw) return new Set();
+    const ids = JSON.parse(raw) as string[];
+    return new Set(Array.isArray(ids) ? ids : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveFolderFilter(ids: Set<string>) {
+  localStorage.setItem(STORAGE_FOLDERS, JSON.stringify([...ids]));
+}
+
+function isFolderNode(node: ViewBookmarkNode): boolean {
+  return Boolean(node.children?.length) && !node.url;
+}
+
+function collectFolders(nodes: ViewBookmarkNode[], path: string[] = []): { id: string; label: string }[] {
+  const out: { id: string; label: string }[] = [];
+  for (const node of nodes) {
+    if (!isFolderNode(node)) continue;
+    const label = [...path, node.title].join(' / ');
+    out.push({ id: node.id, label });
+    if (node.children) {
+      out.push(...collectFolders(node.children, [...path, node.title]));
+    }
+  }
+  return out;
+}
+
+function folderSelected(folderId: string, filter: Set<string>): boolean {
+  return filter.size === 0 || filter.has(folderId);
+}
+
+function extractSections(
+  nodes: ViewBookmarkNode[],
+  filter: Set<string>,
+  parentPath: string[] = [],
+): BookmarkSection[] {
+  const sections: BookmarkSection[] = [];
+
+  for (const node of nodes) {
+    if (node.url) continue;
+
+    if (isFolderNode(node)) {
+      const links: BookmarkLink[] = [];
+      const walk = (children: ViewBookmarkNode[]) => {
+        for (const child of children) {
+          if (child.url) {
+            links.push({ id: child.id, title: child.title, url: child.url });
+          } else if (child.children) {
+            walk(child.children);
+          }
+        }
+      };
+
+      if (folderSelected(node.id, filter) && node.children) {
+        walk(node.children);
+        if (links.length > 0) {
+          sections.push({
+            folderId: node.id,
+            folderTitle: [...parentPath, node.title].join(' / '),
+            links,
+          });
+        }
+      }
+
+      if (node.children) {
+        sections.push(...extractSections(node.children, filter, [...parentPath, node.title]));
+      }
+    }
+  }
+
+  return sections;
+}
+
+function faviconUrl(url: string): string {
+  try {
+    const host = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${host}&sz=32`;
+  } catch {
+    return '/favicon.svg';
+  }
+}
+
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 6) return '夜深了';
+  if (h < 12) return '早上好';
+  if (h < 14) return '中午好';
+  if (h < 18) return '下午好';
+  return '晚上好';
+}
+
+function updateClock(el: HTMLElement) {
+  const now = new Date();
+  const date = now.toLocaleDateString('zh-CN', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+  const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  el.textContent = `${date} · ${time}`;
+}
+
+function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
+  if (sections.length === 0) {
+    container.innerHTML =
+      '<p class="view-empty">没有匹配的书签。试试调整文件夹筛选，或安装扩展同步浏览器书签。</p>';
+    return;
+  }
+
+  container.innerHTML = sections
+    .map(
+      (section) => `
+    <section class="view-bookmark-section" data-folder-id="${section.folderId}">
+      <h3 class="view-bookmark-section__title">${escapeHtml(section.folderTitle)}</h3>
+      <div class="view-bookmark-grid">
+        ${section.links
+          .map(
+            (link) => `
+          <a class="view-bookmark-card" href="${escapeAttr(link.url)}" target="_blank" rel="noopener noreferrer">
+            <img src="${escapeAttr(faviconUrl(link.url))}" alt="" width="20" height="20" loading="lazy" />
+            <span>${escapeHtml(link.title)}</span>
+          </a>
+        `,
+          )
+          .join('')}
+      </div>
+    </section>
+  `,
+    )
+    .join('');
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(s: string): string {
+  return escapeHtml(s).replace(/'/g, '&#39;');
+}
+
+function initSearch() {
+  const form = document.getElementById('view-search-form') as HTMLFormElement | null;
+  const input = document.getElementById('view-search-input') as HTMLInputElement | null;
+  const enginesEl = document.getElementById('view-engines');
+  if (!form || !input || !enginesEl) return;
+
+  let engineId = loadEngineId();
+
+  const applyEngine = () => {
+    const engine = getEngine(engineId);
+    input.placeholder = engine.placeholder;
+    enginesEl.querySelectorAll<HTMLButtonElement>('.view-engine').forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.engine === engineId));
+    });
+    localStorage.setItem(STORAGE_ENGINE, engineId);
+  };
+
+  enginesEl.querySelectorAll<HTMLButtonElement>('.view-engine').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.engine as SearchEngineId | undefined;
+      if (!id || !searchEngines.some((e) => e.id === id)) return;
+      engineId = id;
+      applyEngine();
+      input.focus();
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q) return;
+    window.location.href = getEngine(engineId).buildUrl(q);
+  });
+
+  applyEngine();
+  input.focus();
+}
+
+function initClock() {
+  const el = document.getElementById('view-clock');
+  if (!el) return;
+  updateClock(el);
+  setInterval(() => updateClock(el), 30_000);
+}
+
+function initBookmarks() {
+  const container = document.getElementById('view-bookmarks');
+  const folderPanel = document.getElementById('view-folder-panel');
+  const folderList = document.getElementById('view-folder-list');
+  const folderToggle = document.getElementById('view-folder-toggle');
+  const folderSelectAll = document.getElementById('view-folder-select-all');
+  const folderClear = document.getElementById('view-folder-clear');
+  const statusEl = document.getElementById('view-status');
+  if (!container || !folderPanel || !folderList) return;
+
+  let tree: ViewBookmarkNode[] = sampleBookmarkTree;
+  let filter = loadFolderFilter();
+  let fromExtension = false;
+
+  const refresh = () => {
+    const folders = collectFolders(tree);
+    renderFolderList(folderList, folders, filter, () => {
+      saveFolderFilter(filter);
+      refresh();
+    });
+    const sections = extractSections(tree, filter);
+    renderBookmarks(sections, container);
+  };
+
+  const extBanner = document.getElementById('view-ext-banner');
+
+  const setStatus = (live: boolean) => {
+    if (!statusEl) return;
+    if (live) {
+      statusEl.textContent = '已连接浏览器扩展 · 显示真实书签';
+      statusEl.classList.add('view-status--live');
+      extBanner?.classList.add('is-connected');
+    } else {
+      statusEl.textContent = '示例书签 · 安装扩展后将自动同步浏览器书签';
+      statusEl.classList.remove('view-status--live');
+      extBanner?.classList.remove('is-connected');
+    }
+  };
+
+  folderToggle?.addEventListener('click', () => {
+    const open = folderPanel.classList.toggle('is-open');
+    folderToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  folderSelectAll?.addEventListener('click', () => {
+    filter = new Set(collectFolders(tree).map((f) => f.id));
+    saveFolderFilter(filter);
+    refresh();
+  });
+
+  folderClear?.addEventListener('click', () => {
+    filter = new Set();
+    saveFolderFilter(filter);
+    refresh();
+  });
+
+  window.addEventListener('message', (event) => {
+    const data = event.data;
+    if (!data || data.source !== MSG_SOURCE_EXT) return;
+    if (data.type === 'BOOKMARKS' && Array.isArray(data.tree)) {
+      tree = data.tree as ViewBookmarkNode[];
+      fromExtension = true;
+      setStatus(true);
+      refresh();
+    }
+  });
+
+  window.postMessage({ source: MSG_SOURCE_PAGE, type: 'REQUEST_BOOKMARKS' }, '*');
+  setStatus(fromExtension);
+  refresh();
+
+  // 扩展未响应时保持示例数据
+  setTimeout(() => {
+    if (!fromExtension) setStatus(false);
+  }, 800);
+}
+
+function renderFolderList(
+  el: HTMLElement,
+  folders: { id: string; label: string }[],
+  filter: Set<string>,
+  onChange: () => void,
+) {
+  if (folders.length === 0) {
+    el.innerHTML = '<p class="view-folder-panel__hint">暂无文件夹</p>';
+    return;
+  }
+
+  el.innerHTML = folders
+    .map(
+      (f) => `
+    <label class="view-folder-item">
+      <input type="checkbox" data-folder-id="${escapeAttr(f.id)}" ${filter.size === 0 || filter.has(f.id) ? 'checked' : ''} />
+      <span>${escapeHtml(f.label)}</span>
+    </label>
+  `,
+    )
+    .join('');
+
+  el.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const allIds = folders.map((f) => f.id);
+      const checked = [...el.querySelectorAll<HTMLInputElement>('input:checked')].map(
+        (i) => i.dataset.folderId!,
+      );
+
+      if (checked.length === 0 || checked.length === allIds.length) {
+        filter.clear();
+      } else {
+        filter.clear();
+        checked.forEach((id) => filter.add(id));
+      }
+      onChange();
+    });
+  });
+}
+
+function initKeyboard() {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement?.tagName !== 'INPUT') {
+      e.preventDefault();
+      (document.getElementById('view-search-input') as HTMLInputElement | null)?.focus();
+    }
+  });
+}
+
+export function initViewPage() {
+  initClock();
+  initSearch();
+  initBookmarks();
+  initKeyboard();
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initViewPage);
+  } else {
+    initViewPage();
+  }
+}
