@@ -3,7 +3,7 @@ interface TimelineItem {
   role: string;
   org: string;
   period: string;
-  desc: string;
+  desc?: string;
 }
 
 interface Props {
@@ -27,7 +27,7 @@ const { title, items } = Astro.props;
               <span class="timeline__org">{item.org}</span>
             </div>
           </div>
-          <p class="timeline__desc">{item.desc}</p>
+          {item.desc && <p class="timeline__desc">{item.desc}</p>}
         </li>
       ))
     }

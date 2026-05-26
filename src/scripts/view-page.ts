@@ -121,15 +121,6 @@ function faviconUrl(url: string): string {
   }
 }
 
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 6) return '夜深了';
-  if (h < 12) return '早上好';
-  if (h < 14) return '中午好';
-  if (h < 18) return '下午好';
-  return '晚上好';
-}
-
 function updateClock(el: HTMLElement) {
   const now = new Date();
   const date = now.toLocaleDateString('zh-CN', {

@@ -98,11 +98,13 @@ export const profile = {
         role: '全国大学生英语翻译大赛（NETCCS）',
         org: '省级二等奖',
         period: '2024',
+        desc: '英语翻译类竞赛。',
       },
       {
         role: '校级及以上荣誉',
         org: '个人与团队奖项 10 余项',
         period: '2023 — 2025',
+        desc: '含个人与团队类校级以上荣誉。',
       },
     ],
   },
