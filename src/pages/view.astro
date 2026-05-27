@@ -15,19 +15,25 @@ import { searchEngines } from '../data/view-search';
       <h1 class="view-greeting" id="view-greeting">你好</h1>
 
       <div class="view-search-wrap">
-        <form id="view-search-form" class="view-search-form" role="search">
-          <input
-            id="view-search-input"
-            class="view-search-input"
-            type="search"
-            name="q"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            aria-label="搜索"
-          />
-          <button type="submit" class="view-search-submit">搜索</button>
-        </form>
+        <div class="view-search-box">
+          <form id="view-search-form" class="view-search-form" role="search">
+            <input
+              id="view-search-input"
+              class="view-search-input"
+              type="search"
+              name="q"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-label="搜索"
+              aria-expanded="false"
+              aria-controls="view-suggest"
+              aria-autocomplete="list"
+            />
+            <button type="submit" class="view-search-submit">搜索</button>
+          </form>
+          <ul id="view-suggest" class="view-suggest" role="listbox" hidden></ul>
+        </div>
 
         <div id="view-engines" class="view-engines" role="group" aria-label="搜索引擎">
           {

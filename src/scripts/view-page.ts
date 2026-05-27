@@ -7,6 +7,7 @@ import {
 } from '../data/view-search';
 import { sampleBookmarkTree, type ViewBookmarkNode } from '../data/view-bookmarks.sample';
 import { faviconSrcForRender, hydrateFaviconImages, initFaviconRetryOnVisible } from './favicon-cache';
+import { initSearchAutocomplete, saveRecentQuery } from './view-autocomplete';
 
 const MSG_SOURCE_PAGE = 'jenrimark-view';
 const MSG_SOURCE_EXT = 'jenrimark-view-ext';
@@ -179,10 +180,18 @@ function escapeAttr(s: string): string {
 function initSearch() {
   const form = document.getElementById('view-search-form') as HTMLFormElement | null;
   const input = document.getElementById('view-search-input') as HTMLInputElement | null;
+  const suggest = document.getElementById('view-suggest') as HTMLUListElement | null;
   const enginesEl = document.getElementById('view-engines');
-  if (!form || !input || !enginesEl) return;
+  if (!form || !input || !enginesEl || !suggest) return;
 
   let engineId = loadEngineId();
+
+  const submitQuery = (q: string) => {
+    const query = q.trim();
+    if (!query) return;
+    saveRecentQuery(query);
+    window.location.href = getEngine(engineId).buildUrl(query);
+  };
 
   const applyEngine = () => {
     const engine = getEngine(engineId);
@@ -205,9 +214,14 @@ function initSearch() {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const q = input.value.trim();
-    if (!q) return;
-    window.location.href = getEngine(engineId).buildUrl(q);
+    submitQuery(input.value);
+  });
+
+  initSearchAutocomplete({
+    input,
+    list: suggest,
+    isGoogle: () => engineId === 'google',
+    onSubmit: submitQuery,
   });
 
   applyEngine();
