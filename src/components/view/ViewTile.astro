@@ -1,0 +1,35 @@
+---
+interface Props {
+  class?: string;
+  span?: 'full' | 'half';
+  strong?: boolean;
+  liquid?: boolean;
+  id?: string;
+}
+
+const { class: className = '', span = 'half', strong = false, liquid = false, id } = Astro.props;
+---
+
+<div
+  id={id}
+  class:list={[
+    'view-tile',
+    span === 'full' && 'view-tile--span-full',
+    strong && 'view-tile--strong',
+    liquid && 'view-tile--liquid',
+    className,
+  ]}
+>
+  {
+    liquid && (
+      <div class="view-tile__deco" aria-hidden="true">
+        <div class="view-tile__deco-smear" />
+      </div>
+    )
+  }
+  <div class="view-tile__cover" aria-hidden="true"></div>
+  <div class="view-tile__rim" aria-hidden="true"></div>
+  <div class="view-tile__content">
+    <slot />
+  </div>
+</div>

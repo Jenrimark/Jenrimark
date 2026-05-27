@@ -56,14 +56,14 @@ const { title = `View — ${site.name}` } = Astro.props;
           <feDisplacementMap
             in="SourceGraphic"
             in2="noise"
-            scale="5"
+            scale="10"
             xChannelSelector="R"
             yChannelSelector="G"
           />
         </filter>
       </defs>
     </svg>
-    <div id="view-bg" class="view-bg" aria-hidden="true"></div>
+    <div id="view-bg" class="view-bg view-bg--default" aria-hidden="true"></div>
     <div id="view-bg-dim" class="view-bg-dim" aria-hidden="true"></div>
     <slot />
   </body>
