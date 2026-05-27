@@ -40,6 +40,29 @@ const { title = `View — ${site.name}` } = Astro.props;
     </script>
   </head>
   <body class="view-body">
+    <!-- SVG：仅用于装饰层 feDisplacementMap + 噪声，不直接套在文字上 -->
+    <svg class="view-svg-filters" aria-hidden="true" width="0" height="0">
+      <defs>
+        <filter
+          id="view-liquid-smear"
+          x="-15%"
+          y="-15%"
+          width="130%"
+          height="130%"
+          filterUnits="objectBoundingBox"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="7" result="noise" />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="5"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </defs>
+    </svg>
     <div id="view-bg" class="view-bg" aria-hidden="true"></div>
     <div id="view-bg-dim" class="view-bg-dim" aria-hidden="true"></div>
     <slot />

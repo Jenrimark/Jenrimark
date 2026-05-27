@@ -1,55 +1,71 @@
-/* /view/ — Apple 液态玻璃（统一 .view-glass）+ 白天 / 黑夜 */
+/* /view/ — 黑白灰 + 分层液态高光；折射仅作用于搜索区装饰层（SVG feDisplacementMap） */
 
 html[data-view-theme='light'] {
-  --view-text: #1c1c1e;
-  --view-text-muted: #636366;
-  --view-accent: #e07a4f;
-  --view-accent-soft: rgba(224, 122, 79, 0.2);
-  --view-accent-text: #1c1c1e;
-  --view-glass-bg: rgba(255, 255, 255, 0.5);
-  --view-glass-bg-strong: rgba(255, 255, 255, 0.68);
-  --view-glass-border: rgba(255, 255, 255, 0.72);
-  --view-glass-border-subtle: rgba(0, 0, 0, 0.07);
-  --view-glass-highlight: rgba(255, 255, 255, 0.85);
-  --view-glass-hover: rgba(255, 255, 255, 0.82);
+  color-scheme: light;
+  --view-text: #0a0a0a;
+  --view-text-muted: #5a5a5a;
+  --view-accent: #0a0a0a;
+  --view-accent-soft: rgba(0, 0, 0, 0.07);
+  --view-accent-text: #fafafa;
+  --view-accent-ring: rgba(0, 0, 0, 0.22);
+  --view-glass-bg: rgba(255, 255, 255, 0.48);
+  --view-glass-bg-strong: rgba(255, 255, 255, 0.66);
+  --view-glass-border: rgba(255, 255, 255, 0.78);
+  --view-glass-border-subtle: rgba(0, 0, 0, 0.08);
+  --view-glass-highlight: rgba(255, 255, 255, 0.92);
+  --view-glass-hover: rgba(255, 255, 255, 0.88);
+  --view-glass-rim: rgba(0, 0, 0, 0.06);
   --view-glass-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -0.5px 0 rgba(255, 255, 255, 0.35);
-  --view-blur: 28px;
-  --view-blur-soft: 18px;
-  --view-saturate: 185%;
-  --view-bg-fallback: #e8e4df;
+    0 4px 28px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  --view-blur: 30px;
+  --view-blur-soft: 20px;
+  --view-saturate: 88%;
+  --view-bg-fallback: #e4e4e4;
   --view-bg-gradient:
-    radial-gradient(ellipse 90% 55% at 50% -25%, rgba(224, 122, 79, 0.12), transparent),
-    radial-gradient(ellipse 50% 35% at 100% 100%, rgba(107, 140, 206, 0.1), transparent);
-  --view-live: #2d8a66;
+    radial-gradient(ellipse 85% 50% at 50% -20%, rgba(255, 255, 255, 0.85), transparent),
+    radial-gradient(ellipse 45% 30% at 100% 100%, rgba(0, 0, 0, 0.04), transparent),
+    radial-gradient(ellipse 40% 28% at 0% 95%, rgba(0, 0, 0, 0.035), transparent);
+  --view-live: #1a1a1a;
+  --view-liquid-sheen: rgba(255, 255, 255, 0.95);
+  --view-liquid-sheen-2: rgba(255, 255, 255, 0.45);
+  --view-liquid-opacity: 0.2;
 }
 
 html[data-view-theme='dark'] {
-  --view-text: #f5f0e8;
-  --view-text-muted: #9a9488;
-  --view-accent: #e07a4f;
-  --view-accent-soft: rgba(224, 122, 79, 0.18);
-  --view-accent-text: #0c0c0b;
-  --view-glass-bg: rgba(32, 32, 30, 0.42);
-  --view-glass-bg-strong: rgba(38, 38, 36, 0.58);
-  --view-glass-border: rgba(255, 255, 255, 0.16);
-  --view-glass-border-subtle: rgba(255, 255, 255, 0.09);
-  --view-glass-highlight: rgba(255, 255, 255, 0.14);
-  --view-glass-hover: rgba(48, 48, 45, 0.58);
+  color-scheme: dark;
+  --view-text: #f0f0f0;
+  --view-text-muted: #8c8c8c;
+  --view-accent: #f2f2f2;
+  --view-accent-soft: rgba(255, 255, 255, 0.1);
+  --view-accent-text: #0a0a0a;
+  --view-accent-ring: rgba(255, 255, 255, 0.22);
+  --view-glass-bg: rgba(28, 28, 28, 0.45);
+  --view-glass-bg-strong: rgba(36, 36, 36, 0.58);
+  --view-glass-border: rgba(255, 255, 255, 0.14);
+  --view-glass-border-subtle: rgba(255, 255, 255, 0.08);
+  --view-glass-highlight: rgba(255, 255, 255, 0.16);
+  --view-glass-hover: rgba(52, 52, 52, 0.62);
+  --view-glass-rim: rgba(255, 255, 255, 0.1);
   --view-glass-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -0.5px 0 rgba(255, 255, 255, 0.04);
-  --view-blur: 28px;
-  --view-blur-soft: 18px;
-  --view-saturate: 175%;
-  --view-bg-fallback: #0c0c0b;
+    0 10px 36px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+  --view-blur: 30px;
+  --view-blur-soft: 20px;
+  --view-saturate: 92%;
+  --view-bg-fallback: #080808;
   --view-bg-gradient:
-    radial-gradient(ellipse 90% 55% at 50% -25%, rgba(224, 122, 79, 0.14), transparent),
-    radial-gradient(ellipse 50% 35% at 0% 100%, rgba(107, 140, 206, 0.08), transparent);
-  --view-live: #5aab8c;
+    radial-gradient(ellipse 80% 48% at 50% -18%, rgba(255, 255, 255, 0.07), transparent),
+    radial-gradient(ellipse 42% 28% at 0% 100%, rgba(255, 255, 255, 0.04), transparent),
+    radial-gradient(ellipse 38% 26% at 100% 98%, rgba(255, 255, 255, 0.03), transparent);
+  --view-live: #d0d0d0;
+  --view-liquid-sheen: rgba(255, 255, 255, 0.32);
+  --view-liquid-sheen-2: rgba(255, 255, 255, 0.1);
+  --view-liquid-opacity: 0.28;
 }
 
 .view-body {
@@ -89,10 +105,23 @@ html[data-view-theme='dark'] {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(180deg, var(--view-glass-highlight) 0%, transparent 48%);
-  opacity: 0.5;
+  background: linear-gradient(168deg, var(--view-glass-highlight) 0%, transparent 52%);
+  opacity: 0.42;
+}
+
+/* 内缘「锐利」层，对应 liquid 里的 sharp / rim */
+.view-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--view-glass-rim);
+  opacity: 0.65;
 }
 
 .view-glass > * {
@@ -348,11 +377,41 @@ html[data-view-theme='dark'] .view-greeting {
   max-width: 640px;
 }
 
+.view-svg-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
 .view-search-box {
   position: relative;
 }
 
+/* 搜索框背后：高光 + feDisplacementMap，仅扭曲装饰层，不碰文字 */
+.view-search-deco {
+  position: absolute;
+  inset: -4px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.view-search-deco__smear {
+  position: absolute;
+  inset: -40% -25%;
+  background:
+    radial-gradient(ellipse 100% 70% at 50% -5%, var(--view-liquid-sheen), transparent 58%),
+    linear-gradient(108deg, transparent 32%, var(--view-liquid-sheen-2) 50%, transparent 68%);
+  opacity: var(--view-liquid-opacity);
+  filter: url(#view-liquid-smear);
+}
+
 .view-search-form {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -423,7 +482,7 @@ html[data-view-theme='dark'] .view-greeting {
 .view-engine[aria-pressed='true'] {
   color: var(--view-text);
   background: var(--view-accent-soft);
-  border-color: rgba(224, 122, 79, 0.35);
+  border-color: var(--view-accent-ring);
 }
 
 .view-suggest {
@@ -506,7 +565,7 @@ html[data-view-theme='dark'] .view-greeting {
 
 .view-btn[aria-expanded='true'] {
   color: var(--view-text);
-  border-color: rgba(224, 122, 79, 0.4);
+  border-color: var(--view-accent-ring);
   background: var(--view-accent-soft);
 }
 
@@ -518,6 +577,8 @@ html[data-view-theme='dark'] .view-greeting {
 
 .view-status--live {
   color: var(--view-live);
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .view-ext-banner {
@@ -556,10 +617,15 @@ html[data-view-theme='dark'] .view-greeting {
   border-color: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  box-shadow: 0 2px 12px rgba(224, 122, 79, 0.35);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.14);
 }
 
-.view-btn--accent::before {
+html[data-view-theme='dark'] .view-btn--accent {
+  box-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
+}
+
+.view-btn--accent::before,
+.view-btn--accent::after {
   display: none;
 }
 
@@ -712,6 +778,10 @@ html[data-view-theme='dark'] .view-greeting {
 }
 
 @media (max-width: 520px) {
+  .view-search-deco {
+    border-radius: var(--radius-lg);
+  }
+
   .view-search-form {
     flex-wrap: wrap;
     border-radius: var(--radius-lg);
@@ -729,6 +799,16 @@ html[data-view-theme='dark'] .view-greeting {
   }
 
   .view-glass::before {
-    opacity: 0.35;
+    opacity: 0.3;
+  }
+
+  .view-glass::after {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-search-deco__smear {
+    filter: none;
   }
 }
