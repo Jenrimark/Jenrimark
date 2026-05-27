@@ -1,9 +1,10 @@
-/** 书签 favicon 本地缓存 — 按域名记住可用的图标 URL，避免 CORS 与错误 fallback */
+/** 书签 favicon 本地缓存 — 按域名记住可用的图标 URL；失败自动重试 */
 
 const STORAGE_KEY = 'view:favicon-cache-v2';
 const LEGACY_KEY = 'view:favicon-cache-v1';
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 const MAX_ENTRIES = 240;
+const RETRY_DELAYS_MS = [2000, 5000];
 
 interface CacheEntry {
   src: string;
@@ -13,6 +14,7 @@ interface CacheEntry {
 type CacheStore = Record<string, CacheEntry>;
 
 const memory = new Map<string, string>();
+let retryTimers: ReturnType<typeof setTimeout>[] = [];
 
 function hostFromUrl(pageUrl: string): string | null {
   try {
@@ -27,6 +29,7 @@ function faviconProviders(host: string): string[] {
     `https://icons.duckduckgo.com/ip3/${host}.ico`,
     `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=32`,
     `https://favicon.yandex.net/favicon/v2/${encodeURIComponent(host)}?size=32`,
+    `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`,
   ];
 }
 
@@ -43,7 +46,9 @@ function loadStore(): CacheStore {
 
 function saveStore(store: CacheStore) {
   const now = Date.now();
-  const entries = Object.entries(store).filter(([, e]) => now - e.at < MAX_AGE_MS && e.src && !e.src.includes('favicon.svg'));
+  const entries = Object.entries(store).filter(
+    ([, e]) => now - e.at < MAX_AGE_MS && e.src && !e.src.includes('favicon.svg'),
+  );
   entries.sort((a, b) => b[1].at - a[1].at);
   const pruned = Object.fromEntries(entries.slice(0, MAX_ENTRIES));
   try {
@@ -63,6 +68,13 @@ function persist(host: string, src: string) {
   memory.set(host, src);
   const store = loadStore();
   store[host] = { src, at: Date.now() };
+  saveStore(store);
+}
+
+function invalidateCache(host: string) {
+  memory.delete(host);
+  const store = loadStore();
+  delete store[host];
   saveStore(store);
 }
 
@@ -98,12 +110,59 @@ export function faviconSrcForRender(pageUrl: string): string {
 }
 
 function applySrc(img: HTMLImageElement, src: string) {
-  if (img.src !== src) img.src = src;
+  if (img.getAttribute('src') !== src) img.setAttribute('src', src);
 }
 
-/** 渲染后：无缓存则依次尝试多个图标源，成功即写入缓存；失败也不换成站点 favicon */
-export function hydrateFaviconImages(container: HTMLElement) {
-  container.querySelectorAll<HTMLAnchorElement>('a.view-bookmark-card').forEach((card) => {
+function markFaviconState(img: HTMLImageElement, state: 'pending' | 'ok' | 'failed') {
+  img.dataset.faviconState = state;
+}
+
+function clearRetryTimers() {
+  retryTimers.forEach(clearTimeout);
+  retryTimers = [];
+}
+
+function tryProviders(
+  img: HTMLImageElement,
+  host: string,
+  candidates: string[],
+  startIndex: number,
+  onAllFailed: () => void,
+) {
+  let index = startIndex;
+
+  const tryNext = () => {
+    if (index >= candidates.length) {
+      onAllFailed();
+      return;
+    }
+
+    const src = candidates[index];
+    index += 1;
+
+    img.onload = () => {
+      img.onload = null;
+      img.onerror = null;
+      persist(host, src);
+      markFaviconState(img, 'ok');
+    };
+
+    img.onerror = () => {
+      img.onload = null;
+      img.onerror = null;
+      tryNext();
+    };
+
+    applySrc(img, src);
+  };
+
+  tryNext();
+}
+
+function loadFaviconForCard(card: HTMLAnchorElement, options: { skipCache?: boolean; staggerMs?: number } = {}) {
+  const { skipCache = false, staggerMs = 0 } = options;
+
+  const run = () => {
     const img = card.querySelector<HTMLImageElement>('img[data-favicon]');
     if (!img) return;
 
@@ -111,36 +170,77 @@ export function hydrateFaviconImages(container: HTMLElement) {
     const host = hostFromUrl(pageUrl);
     if (!host) return;
 
-    const cached = getCachedFavicon(pageUrl);
+    markFaviconState(img, 'pending');
+    img.onload = null;
+    img.onerror = null;
+
+    const candidates = faviconProviders(host);
+    const cached = skipCache ? null : getCachedFavicon(pageUrl);
+
+    const failAll = () => markFaviconState(img, 'failed');
+
     if (cached) {
+      img.onload = () => {
+        img.onload = null;
+        img.onerror = null;
+        markFaviconState(img, 'ok');
+      };
+      img.onerror = () => {
+        img.onload = null;
+        img.onerror = null;
+        invalidateCache(host);
+        tryProviders(img, host, candidates, 0, failAll);
+      };
       applySrc(img, cached);
       return;
     }
 
-    const candidates = faviconProviders(host);
-    let index = 0;
+    tryProviders(img, host, candidates, 0, failAll);
+  };
 
-    const tryNext = () => {
-      if (index >= candidates.length) return;
+  if (staggerMs > 0) {
+    setTimeout(run, staggerMs);
+  } else {
+    run();
+  }
+}
 
-      const src = candidates[index];
-      index += 1;
+function retryFailedFavicons(container: HTMLElement) {
+  container.querySelectorAll<HTMLAnchorElement>('a.view-bookmark-card').forEach((card) => {
+    const img = card.querySelector<HTMLImageElement>('img[data-favicon]');
+    if (!img || img.dataset.faviconState !== 'failed') return;
+    loadFaviconForCard(card, { skipCache: true });
+  });
+}
 
-      img.onload = () => {
-        img.onload = null;
-        img.onerror = null;
-        persist(host, src);
-      };
+/** 渲染后加载图标；刷新页面会重新走一遍；失败项延迟自动重试 */
+export function hydrateFaviconImages(container: HTMLElement) {
+  clearRetryTimers();
 
-      img.onerror = () => {
-        img.onload = null;
-        img.onerror = null;
-        tryNext();
-      };
+  const cards = [...container.querySelectorAll<HTMLAnchorElement>('a.view-bookmark-card')];
+  cards.forEach((card, index) => {
+    const pageUrl = card.href;
+    const hasCache = Boolean(getCachedFavicon(pageUrl));
+    loadFaviconForCard(card, {
+      skipCache: false,
+      staggerMs: hasCache ? 0 : Math.floor(index / 6) * 80,
+    });
+  });
 
-      applySrc(img, src);
-    };
+  for (const delay of RETRY_DELAYS_MS) {
+    retryTimers.push(
+      setTimeout(() => {
+        retryFailedFavicons(container);
+      }, delay),
+    );
+  }
+}
 
-    tryNext();
+/** 页面可见时补拉仍失败的图标（切回标签页 / 刷新后） */
+export function initFaviconRetryOnVisible(container: HTMLElement) {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      retryFailedFavicons(container);
+    }
   });
 }

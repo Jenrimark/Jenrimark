@@ -374,9 +374,12 @@
 }
 
 .view-bookmark-card img[data-favicon] {
-  /* 避免缓存命中前布局跳动 */
   min-width: 20px;
   min-height: 20px;
+}
+
+.view-bookmark-card img[data-favicon-state='failed'] {
+  opacity: 0.35;
 }
 
 .view-bookmark-card span {

@@ -6,7 +6,7 @@ import {
   type SearchEngineId,
 } from '../data/view-search';
 import { sampleBookmarkTree, type ViewBookmarkNode } from '../data/view-bookmarks.sample';
-import { faviconSrcForRender, hydrateFaviconImages } from './favicon-cache';
+import { faviconSrcForRender, hydrateFaviconImages, initFaviconRetryOnVisible } from './favicon-cache';
 
 const MSG_SOURCE_PAGE = 'jenrimark-view';
 const MSG_SOURCE_EXT = 'jenrimark-view-ext';
@@ -141,7 +141,7 @@ function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
           .map(
             (link) => `
           <a class="view-bookmark-card" href="${escapeAttr(link.url)}" target="_blank" rel="noopener noreferrer">
-            <img src="${escapeAttr(faviconSrcForRender(link.url))}" data-favicon alt="" width="20" height="20" decoding="async" />
+            <img src="${escapeAttr(faviconSrcForRender(link.url))}" data-favicon data-favicon-state="pending" alt="" width="20" height="20" decoding="async" referrerpolicy="no-referrer" />
             <span>${escapeHtml(link.title)}</span>
           </a>
         `,
@@ -154,6 +154,14 @@ function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
     .join('');
 
   hydrateFaviconImages(container);
+}
+
+let faviconRetryBound = false;
+
+function bindFaviconRetry(container: HTMLElement) {
+  if (faviconRetryBound) return;
+  faviconRetryBound = true;
+  initFaviconRetryOnVisible(container);
 }
 
 function escapeHtml(s: string): string {
@@ -235,6 +243,7 @@ function initBookmarks() {
     });
     const sections = extractSections(tree, filter);
     renderBookmarks(sections, container);
+    bindFaviconRetry(container);
   };
 
   const extBanner = document.getElementById('view-ext-banner');
