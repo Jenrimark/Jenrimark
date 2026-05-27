@@ -34,11 +34,7 @@ frps.toml
 **/FRP/frpc.toml
 **/FRP/frps.toml
 
-# ─── 个人文档（仅本地保留，不推 GitHub）───
-# 若希望文档也进仓库：删掉下面这一行
-docs/
-
-# 本地草稿 / 笔记
+# 本地草稿 / 笔记（含私密路径的教程放这里，勿提交）
 docs-local/
 *.local.md
 *.draft.md

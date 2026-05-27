@@ -1,39 +1,13 @@
-# Jenrimark 个人站
+👋 你好！我是 **Jenrimark** ！
 
-Astro 静态站 + Bento 首页，Mac 开发，家里 Windows 托管（Nginx + 88 FRP）。
+🔭 我目前是中国地质大学（武汉）软件工程专业本科在读，主攻全栈与鸿蒙应用开发——Web 端常用 Vue3 / React / TypeScript，服务端用 SpringBoot 和 Go，也在做 HarmonyOS 原生应用。
 
-## 快速开始
+🌱 空闲时喜欢把想法写成能跑的代码，偶尔打打羽毛球。
 
-```bash
-npm install
-npm run dev      # http://localhost:4321
-npm run build    # 输出 dist/
-```
+💞️ 这是我的 [个人主页](http://gd02.frp0.cc:23333/)。
 
-## 写内容
+📫 如果你对我的项目感兴趣，或有任何问题，欢迎通过 [2303532728@qq.com](mailto:2303532728@qq.com) 联系我，也可以在 [GitHub](https://github.com/Jenrimark) 上私信我。
 
-1. 改 `src/site.config.ts`
-2. 在 `src/content/blog/` 新增 `.md`
-3. `git push` → 家里 Webhook 自动 pull + build
+---
 
-- [傻瓜教程-Mac开发-Windows家里.md](docs/傻瓜教程-Mac开发-Windows家里.md) — Nginx、frp
-- [Windows-Git自动部署.md](docs/Windows-Git自动部署.md) — Webhook、SSH、`HOME_WEBHOOK_URL`
-
-## deploy 目录（Windows）
-
-```
-deploy/windows/
-  run-webhook.bat      # Push 触发（常开）
-  startup-webhook.bat  # 开机自启 Webhook
-  deploy-once.bat      # 手动部署
-  setup-ssh.bat        # Git 改 SSH
-  startup-nginx.bat / startup-frpc.bat
-deploy/scripts/
-  deploy.ps1 / webhook-server.ps1 / setup-ssh-remote.ps1
-deploy/frp/frpc.toml.example
-```
-
-## GitHub Actions
-
-- `ci.yml` — 提交时云端 typecheck + build
-- `trigger-home-deploy.yml` — push 后 curl 家里 Webhook（需 Secret `HOME_WEBHOOK_URL`）
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Jenrimark&show_icons=true&theme=transparent)
