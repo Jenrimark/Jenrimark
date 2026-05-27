@@ -35,9 +35,7 @@ frps.toml
 **/FRP/frps.toml
 
 # 本地草稿 / 笔记（含私密路径的教程放这里，勿提交）
-docs-local/
-*.local.md
-*.draft.md
+docs/
 
 # ─── 操作系统垃圾文件 ───
 .DS_Store
