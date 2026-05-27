@@ -1,87 +1,70 @@
-/* /view/ — 黑白灰 + 分层液态高光；折射仅作用于搜索区装饰层（SVG feDisplacementMap） */
+/* /view/ — 彩色默认壁纸 + 原布局 + 搜索区液态玻璃 */
 
 html[data-view-theme='light'] {
   color-scheme: light;
-  --view-text: #0a0a0a;
-  --view-text-muted: #5a5a5a;
-  --view-accent: #0a0a0a;
-  --view-accent-soft: rgba(0, 0, 0, 0.07);
-  --view-accent-text: #fafafa;
-  --view-accent-ring: rgba(0, 0, 0, 0.22);
-  --view-glass-bg: rgba(255, 255, 255, 0.48);
-  --view-glass-bg-strong: rgba(255, 255, 255, 0.66);
-  --view-glass-border: rgba(255, 255, 255, 0.78);
-  --view-glass-border-subtle: rgba(0, 0, 0, 0.08);
-  --view-glass-highlight: rgba(255, 255, 255, 0.92);
-  --view-glass-hover: rgba(255, 255, 255, 0.88);
-  --view-glass-rim: rgba(0, 0, 0, 0.06);
+  --view-text: rgba(255, 255, 255, 0.95);
+  --view-text-muted: rgba(255, 255, 255, 0.62);
+  --view-accent: #ffffff;
+  --view-accent-soft: rgba(255, 255, 255, 0.16);
+  --view-accent-text: #1a1a1a;
+  --view-accent-ring: rgba(255, 255, 255, 0.35);
+  --view-glass-bg: rgba(255, 255, 255, 0.14);
+  --view-glass-bg-strong: rgba(255, 255, 255, 0.22);
+  --view-glass-border: rgba(255, 255, 255, 0.22);
+  --view-glass-border-subtle: rgba(255, 255, 255, 0.12);
+  --view-glass-highlight: rgba(255, 255, 255, 0.38);
+  --view-glass-hover: rgba(255, 255, 255, 0.2);
+  --view-glass-rim: rgba(255, 255, 255, 0.28);
   --view-glass-shadow:
-    0 4px 28px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.98),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
-  --view-blur: 30px;
-  --view-blur-soft: 20px;
-  --view-saturate: 88%;
-  --view-bg-fallback: #e4e4e4;
-  --view-bg-gradient:
-    radial-gradient(ellipse 85% 50% at 50% -20%, rgba(255, 255, 255, 0.85), transparent),
-    radial-gradient(ellipse 45% 30% at 100% 100%, rgba(0, 0, 0, 0.04), transparent),
-    radial-gradient(ellipse 40% 28% at 0% 95%, rgba(0, 0, 0, 0.035), transparent);
-  --view-live: #1a1a1a;
-  --view-liquid-sheen: rgba(255, 255, 255, 0.95);
-  --view-liquid-sheen-2: rgba(255, 255, 255, 0.45);
-  --view-liquid-opacity: 0.2;
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --view-blur: 48px;
+  --view-blur-soft: 32px;
+  --view-saturate: 185%;
+  --view-live: rgba(255, 255, 255, 0.92);
+  --view-liquid-sheen: rgba(255, 255, 255, 0.55);
+  --view-liquid-sheen-2: rgba(255, 255, 255, 0.22);
+  --view-liquid-opacity: 0.35;
 }
 
 html[data-view-theme='dark'] {
   color-scheme: dark;
-  --view-text: #f0f0f0;
-  --view-text-muted: #8c8c8c;
-  --view-accent: #f2f2f2;
-  --view-accent-soft: rgba(255, 255, 255, 0.1);
-  --view-accent-text: #0a0a0a;
-  --view-accent-ring: rgba(255, 255, 255, 0.22);
-  --view-glass-bg: rgba(28, 28, 28, 0.45);
-  --view-glass-bg-strong: rgba(36, 36, 36, 0.58);
-  --view-glass-border: rgba(255, 255, 255, 0.14);
-  --view-glass-border-subtle: rgba(255, 255, 255, 0.08);
-  --view-glass-highlight: rgba(255, 255, 255, 0.16);
-  --view-glass-hover: rgba(52, 52, 52, 0.62);
-  --view-glass-rim: rgba(255, 255, 255, 0.1);
+  --view-text: rgba(255, 255, 255, 0.94);
+  --view-text-muted: rgba(255, 255, 255, 0.58);
+  --view-accent: #ffffff;
+  --view-accent-soft: rgba(255, 255, 255, 0.14);
+  --view-accent-text: #111111;
+  --view-accent-ring: rgba(255, 255, 255, 0.32);
+  --view-glass-bg: rgba(255, 255, 255, 0.1);
+  --view-glass-bg-strong: rgba(255, 255, 255, 0.16);
+  --view-glass-border: rgba(255, 255, 255, 0.18);
+  --view-glass-border-subtle: rgba(255, 255, 255, 0.1);
+  --view-glass-highlight: rgba(255, 255, 255, 0.22);
+  --view-glass-hover: rgba(255, 255, 255, 0.18);
+  --view-glass-rim: rgba(255, 255, 255, 0.2);
   --view-glass-shadow:
-    0 10px 36px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
-  --view-blur: 30px;
-  --view-blur-soft: 20px;
-  --view-saturate: 92%;
-  --view-bg-fallback: #080808;
-  --view-bg-gradient:
-    radial-gradient(ellipse 80% 48% at 50% -18%, rgba(255, 255, 255, 0.07), transparent),
-    radial-gradient(ellipse 42% 28% at 0% 100%, rgba(255, 255, 255, 0.04), transparent),
-    radial-gradient(ellipse 38% 26% at 100% 98%, rgba(255, 255, 255, 0.03), transparent);
-  --view-live: #d0d0d0;
-  --view-liquid-sheen: rgba(255, 255, 255, 0.32);
-  --view-liquid-sheen-2: rgba(255, 255, 255, 0.1);
-  --view-liquid-opacity: 0.28;
+    0 12px 40px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --view-blur: 48px;
+  --view-blur-soft: 32px;
+  --view-saturate: 195%;
+  --view-live: rgba(255, 255, 255, 0.9);
+  --view-liquid-sheen: rgba(255, 255, 255, 0.42);
+  --view-liquid-sheen-2: rgba(255, 255, 255, 0.14);
+  --view-liquid-opacity: 0.32;
 }
 
 .view-body {
   margin: 0;
   min-height: 100dvh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
   color: var(--view-text);
   background: transparent;
-  background-color: var(--view-bg-fallback);
-  background-image: var(--view-bg-gradient);
-  transition:
-    color 0.25s ease,
-    background-color 0.25s ease;
+  transition: color 0.25s ease;
 }
 
 .view-body.view-body--photo {
-  background-image: none;
+  /* 自定义壁纸时 body 保持透明，由 #view-bg 承担 */
 }
 
 /* ── 液态玻璃基础 ── */
@@ -165,10 +148,18 @@ button.view-glass:hover:not(:disabled),
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-color: var(--view-bg-fallback);
+  background-color: #120a1c;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.view-bg.view-bg--default {
+  background-image:
+    radial-gradient(ellipse 95% 75% at 72% 12%, rgba(255, 130, 190, 0.92) 0%, transparent 58%),
+    radial-gradient(ellipse 85% 65% at 12% 88%, rgba(130, 110, 235, 0.82) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 55% at 48% 42%, rgba(90, 175, 255, 0.38) 0%, transparent 58%),
+    linear-gradient(155deg, #0c0814 0%, #241038 38%, #5a2878 62%, #c85898 100%);
 }
 
 .view-bg-dim {
