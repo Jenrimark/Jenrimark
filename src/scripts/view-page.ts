@@ -6,6 +6,7 @@ import {
   type SearchEngineId,
 } from '../data/view-search';
 import { sampleBookmarkTree, type ViewBookmarkNode } from '../data/view-bookmarks.sample';
+import { faviconSrcForRender, hydrateFaviconImages } from './favicon-cache';
 
 const MSG_SOURCE_PAGE = 'jenrimark-view';
 const MSG_SOURCE_EXT = 'jenrimark-view-ext';
@@ -112,15 +113,6 @@ function extractSections(
   return sections;
 }
 
-function faviconUrl(url: string): string {
-  try {
-    const host = new URL(url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=32`;
-  } catch {
-    return '/favicon.svg';
-  }
-}
-
 function updateClock(el: HTMLElement) {
   const now = new Date();
   const date = now.toLocaleDateString('zh-CN', {
@@ -149,7 +141,7 @@ function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
           .map(
             (link) => `
           <a class="view-bookmark-card" href="${escapeAttr(link.url)}" target="_blank" rel="noopener noreferrer">
-            <img src="${escapeAttr(faviconUrl(link.url))}" alt="" width="20" height="20" loading="lazy" />
+            <img src="${escapeAttr(faviconSrcForRender(link.url))}" data-favicon alt="" width="20" height="20" decoding="async" />
             <span>${escapeHtml(link.title)}</span>
           </a>
         `,
@@ -160,6 +152,8 @@ function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
   `,
     )
     .join('');
+
+  hydrateFaviconImages(container);
 }
 
 function escapeHtml(s: string): string {
