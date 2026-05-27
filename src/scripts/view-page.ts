@@ -130,7 +130,7 @@ function updateClock(el: HTMLElement) {
 function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
   if (sections.length === 0) {
     container.innerHTML =
-      '<p class="view-empty">没有匹配的书签。试试调整文件夹筛选，或安装扩展同步浏览器书签。</p>';
+      '<p class="view-empty view-glass view-glass--soft view-glass--card view-glass--dashed">没有匹配的书签。试试调整文件夹筛选，或安装扩展同步浏览器书签。</p>';
     return;
   }
 
@@ -143,7 +143,7 @@ function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
         ${section.links
           .map(
             (link) => `
-          <a class="view-bookmark-card" href="${escapeAttr(link.url)}" target="_blank" rel="noopener noreferrer">
+          <a class="view-bookmark-card view-glass view-glass--soft view-glass--card" href="${escapeAttr(link.url)}" target="_blank" rel="noopener noreferrer">
             <img src="${escapeAttr(faviconSrcForRender(link.url))}" data-favicon data-favicon-state="pending" alt="" width="20" height="20" decoding="async" referrerpolicy="no-referrer" />
             <span>${escapeHtml(link.title)}</span>
           </a>

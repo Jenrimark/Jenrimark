@@ -8,7 +8,7 @@ import { searchEngines } from '../data/view-search';
   <div class="view-page">
     <header class="view-topbar">
       <a href="/">← {site.name}</a>
-      <div class="view-topbar__actions">
+      <div class="view-topbar__actions view-glass view-glass--soft view-glass--pill">
         <button
           type="button"
           id="view-theme-toggle"
@@ -32,11 +32,11 @@ import { searchEngines } from '../data/view-search';
       </div>
     </header>
 
-    <div id="view-bg-panel" class="view-bg-panel" hidden>
+    <div id="view-bg-panel" class="view-bg-panel view-glass view-glass--strong view-glass--panel" hidden>
       <p class="view-bg-panel__title">换背景</p>
       <p class="view-bg-panel__lead">打开网页即可上传，选图后立刻生效，下次访问会自动恢复。</p>
 
-      <button type="button" id="view-bg-dropzone" class="view-bg-dropzone">
+      <button type="button" id="view-bg-dropzone" class="view-bg-dropzone view-glass view-glass--soft view-glass--panel view-glass--dashed">
         <span id="view-bg-dropzone-preview" class="view-bg-dropzone__preview" hidden></span>
         <span id="view-bg-dropzone-icon" class="view-bg-dropzone__icon">+</span>
         <span id="view-bg-dropzone-text" class="view-bg-dropzone__text">点击或拖入图片</span>
@@ -46,8 +46,8 @@ import { searchEngines } from '../data/view-search';
       <input id="view-bg-upload" type="file" accept="image/*" hidden />
 
       <div class="view-bg-custom-actions">
-        <button type="button" id="view-bg-default-btn" class="view-btn">恢复默认</button>
-        <button type="button" id="view-bg-clear-custom" class="view-btn" hidden>删除当前图片</button>
+        <button type="button" id="view-bg-default-btn" class="view-btn view-glass view-glass--soft view-glass--pill">恢复默认</button>
+        <button type="button" id="view-bg-clear-custom" class="view-btn view-glass view-glass--soft view-glass--pill" hidden>删除当前图片</button>
       </div>
 
       <div id="view-bg-dim-wrap" class="view-bg-dim-control" hidden>
@@ -62,7 +62,7 @@ import { searchEngines } from '../data/view-search';
 
       <div class="view-search-wrap">
         <div class="view-search-box">
-          <form id="view-search-form" class="view-search-form" role="search">
+          <form id="view-search-form" class="view-search-form view-glass view-glass--strong view-glass--pill" role="search">
             <input
               id="view-search-input"
               class="view-search-input"
@@ -78,7 +78,7 @@ import { searchEngines } from '../data/view-search';
             />
             <button type="submit" class="view-search-submit">搜索</button>
           </form>
-          <ul id="view-suggest" class="view-suggest" role="listbox" hidden></ul>
+          <ul id="view-suggest" class="view-suggest view-glass view-glass--strong view-glass--card" role="listbox" hidden></ul>
         </div>
 
         <div id="view-engines" class="view-engines" role="group" aria-label="搜索引擎">
@@ -86,7 +86,7 @@ import { searchEngines } from '../data/view-search';
             searchEngines.map((engine) => (
               <button
                 type="button"
-                class="view-engine"
+                class="view-engine view-glass view-glass--soft view-glass--pill"
                 data-engine={engine.id}
                 aria-pressed={engine.default ? 'true' : 'false'}
               >
@@ -98,7 +98,7 @@ import { searchEngines } from '../data/view-search';
       </div>
     </section>
 
-    <aside class="view-ext-banner" id="view-ext-banner" aria-label="扩展安装">
+    <aside class="view-ext-banner view-glass view-glass--panel" id="view-ext-banner" aria-label="扩展安装">
       <div class="view-ext-banner__main">
         <div class="view-ext-banner__text">
           <strong>书签自动同步</strong>
@@ -130,15 +130,15 @@ import { searchEngines } from '../data/view-search';
           <p id="view-status" class="view-status">加载中…</p>
         </div>
         <div class="view-toolbar-actions">
-          <button type="button" id="view-folder-toggle" class="view-btn" aria-expanded="false">
+          <button type="button" id="view-folder-toggle" class="view-btn view-glass view-glass--soft view-glass--pill" aria-expanded="false">
             文件夹筛选
           </button>
-          <button type="button" id="view-folder-select-all" class="view-btn">全选</button>
-          <button type="button" id="view-folder-clear" class="view-btn">显示全部</button>
+          <button type="button" id="view-folder-select-all" class="view-btn view-glass view-glass--soft view-glass--pill">全选</button>
+          <button type="button" id="view-folder-clear" class="view-btn view-glass view-glass--soft view-glass--pill">显示全部</button>
         </div>
       </div>
 
-      <div id="view-folder-panel" class="view-folder-panel">
+      <div id="view-folder-panel" class="view-folder-panel view-glass view-glass--panel">
         <p class="view-folder-panel__hint">
           勾选要显示的文件夹；不选或全选则显示全部。筛选偏好会保存在本机。
         </p>
@@ -146,7 +146,7 @@ import { searchEngines } from '../data/view-search';
       </div>
 
       <div id="view-bookmarks" class="view-bookmarks">
-        <p class="view-empty">正在加载书签…</p>
+        <p class="view-empty view-glass view-glass--soft view-glass--card view-glass--dashed">正在加载书签…</p>
       </div>
     </section>
   </div>

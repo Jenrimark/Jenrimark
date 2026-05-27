@@ -1,18 +1,24 @@
-/* /view/ — macOS 毛玻璃 + 白天 / 黑夜 */
+/* /view/ — Apple 液态玻璃（统一 .view-glass）+ 白天 / 黑夜 */
 
 html[data-view-theme='light'] {
   --view-text: #1c1c1e;
   --view-text-muted: #636366;
   --view-accent: #e07a4f;
-  --view-accent-soft: rgba(224, 122, 79, 0.18);
+  --view-accent-soft: rgba(224, 122, 79, 0.2);
   --view-accent-text: #1c1c1e;
-  --view-glass-bg: rgba(255, 255, 255, 0.58);
-  --view-glass-bg-strong: rgba(255, 255, 255, 0.72);
-  --view-glass-border: rgba(255, 255, 255, 0.85);
-  --view-glass-border-subtle: rgba(0, 0, 0, 0.06);
-  --view-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  --view-glass-hover: rgba(255, 255, 255, 0.78);
-  --view-blur: 24px;
+  --view-glass-bg: rgba(255, 255, 255, 0.5);
+  --view-glass-bg-strong: rgba(255, 255, 255, 0.68);
+  --view-glass-border: rgba(255, 255, 255, 0.72);
+  --view-glass-border-subtle: rgba(0, 0, 0, 0.07);
+  --view-glass-highlight: rgba(255, 255, 255, 0.85);
+  --view-glass-hover: rgba(255, 255, 255, 0.82);
+  --view-glass-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.35);
+  --view-blur: 28px;
+  --view-blur-soft: 18px;
+  --view-saturate: 185%;
   --view-bg-fallback: #e8e4df;
   --view-bg-gradient:
     radial-gradient(ellipse 90% 55% at 50% -25%, rgba(224, 122, 79, 0.12), transparent),
@@ -24,15 +30,21 @@ html[data-view-theme='dark'] {
   --view-text: #f5f0e8;
   --view-text-muted: #9a9488;
   --view-accent: #e07a4f;
-  --view-accent-soft: rgba(224, 122, 79, 0.15);
+  --view-accent-soft: rgba(224, 122, 79, 0.18);
   --view-accent-text: #0c0c0b;
-  --view-glass-bg: rgba(28, 28, 26, 0.52);
-  --view-glass-bg-strong: rgba(28, 28, 26, 0.68);
-  --view-glass-border: rgba(255, 255, 255, 0.14);
-  --view-glass-border-subtle: rgba(255, 255, 255, 0.08);
-  --view-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --view-glass-hover: rgba(40, 40, 37, 0.62);
-  --view-blur: 24px;
+  --view-glass-bg: rgba(32, 32, 30, 0.42);
+  --view-glass-bg-strong: rgba(38, 38, 36, 0.58);
+  --view-glass-border: rgba(255, 255, 255, 0.16);
+  --view-glass-border-subtle: rgba(255, 255, 255, 0.09);
+  --view-glass-highlight: rgba(255, 255, 255, 0.14);
+  --view-glass-hover: rgba(48, 48, 45, 0.58);
+  --view-glass-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.04);
+  --view-blur: 28px;
+  --view-blur-soft: 18px;
+  --view-saturate: 175%;
   --view-bg-fallback: #0c0c0b;
   --view-bg-gradient:
     radial-gradient(ellipse 90% 55% at 50% -25%, rgba(224, 122, 79, 0.14), transparent),
@@ -56,13 +68,68 @@ html[data-view-theme='dark'] {
   background-image: none;
 }
 
-/* 毛玻璃基础 */
+/* ── 液态玻璃基础 ── */
 .view-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: var(--view-glass-bg);
   border: 1px solid var(--view-glass-border);
-  backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(160%);
   box-shadow: var(--view-glass-shadow);
+  backdrop-filter: blur(var(--view-blur)) saturate(var(--view-saturate));
+  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(var(--view-saturate));
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.12s ease;
+}
+
+.view-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--view-glass-highlight) 0%, transparent 48%);
+  opacity: 0.5;
+}
+
+.view-glass > * {
+  position: relative;
+  z-index: 1;
+}
+
+.view-glass--strong {
+  background: var(--view-glass-bg-strong);
+}
+
+.view-glass--soft {
+  backdrop-filter: blur(var(--view-blur-soft)) saturate(var(--view-saturate));
+  -webkit-backdrop-filter: blur(var(--view-blur-soft)) saturate(var(--view-saturate));
+}
+
+.view-glass--pill {
+  border-radius: 999px;
+}
+
+.view-glass--panel {
+  border-radius: var(--radius-lg);
+}
+
+.view-glass--card {
+  border-radius: var(--radius);
+}
+
+.view-glass--dashed {
+  border-style: dashed;
+  border-color: var(--view-glass-border-subtle);
+}
+
+a.view-glass:hover,
+button.view-glass:hover:not(:disabled),
+.view-glass--interactive:hover {
+  background: var(--view-glass-hover);
 }
 
 .view-bg {
@@ -120,7 +187,8 @@ html[data-view-theme='dark'] {
 .view-topbar__actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.65rem;
 }
 
 .view-theme-toggle {
@@ -129,7 +197,6 @@ html[data-view-theme='dark'] {
   padding: 0;
   display: grid;
   place-items: center;
-  border-radius: 999px;
 }
 
 .view-theme-toggle__icon {
@@ -156,12 +223,6 @@ html[data-view-theme='dark'] {
 
 .view-bg-panel {
   padding: 1rem 1.15rem;
-  border-radius: var(--radius-lg);
-  background: var(--view-glass-bg-strong);
-  border: 1px solid var(--view-glass-border);
-  backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  box-shadow: var(--view-glass-shadow);
 }
 
 .view-bg-panel__title {
@@ -193,17 +254,9 @@ html[data-view-theme='dark'] {
   width: 100%;
   min-height: 140px;
   padding: 1rem;
-  border: 1px dashed var(--view-glass-border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--view-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   color: var(--view-text-muted);
   font: inherit;
   cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
 }
 
 .view-bg-dropzone:hover,
@@ -266,6 +319,7 @@ html[data-view-theme='dark'] {
 .view-clock {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+  padding-inline: 0.35rem;
 }
 
 .view-hero {
@@ -303,20 +357,13 @@ html[data-view-theme='dark'] .view-greeting {
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0.65rem 0.65rem 1.1rem;
-  background: var(--view-glass-bg-strong);
-  border: 1px solid var(--view-glass-border);
-  border-radius: 999px;
-  backdrop-filter: blur(var(--view-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(180%);
-  box-shadow: var(--view-glass-shadow);
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
 }
 
 .view-search-form:focus-within {
   border-color: var(--view-accent);
-  box-shadow: var(--view-glass-shadow), 0 0 0 3px var(--view-accent-soft);
+  box-shadow:
+    var(--view-glass-shadow),
+    0 0 0 3px var(--view-accent-soft);
 }
 
 .view-search-input {
@@ -367,24 +414,10 @@ html[data-view-theme='dark'] .view-greeting {
 .view-engine {
   padding: 0.35rem 0.75rem;
   border: 1px solid transparent;
-  border-radius: 999px;
-  background: var(--view-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   color: var(--view-text-muted);
   font: inherit;
   font-size: 0.8125rem;
   cursor: pointer;
-  transition:
-    color 0.15s ease,
-    background 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.view-engine:hover {
-  color: var(--view-text);
-  background: var(--view-glass-hover);
-  border-color: var(--view-glass-border-subtle);
 }
 
 .view-engine[aria-pressed='true'] {
@@ -402,12 +435,6 @@ html[data-view-theme='dark'] .view-greeting {
   margin: 0;
   padding: 0.35rem;
   list-style: none;
-  background: var(--view-glass-bg-strong);
-  border: 1px solid var(--view-glass-border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(var(--view-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(180%);
-  box-shadow: var(--view-glass-shadow);
   max-height: 320px;
   overflow-y: auto;
 }
@@ -465,25 +492,16 @@ html[data-view-theme='dark'] .view-greeting {
 
 .view-btn {
   padding: 0.4rem 0.85rem;
-  border: 1px solid var(--view-glass-border-subtle);
-  border-radius: 999px;
-  background: var(--view-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  background: transparent;
   color: var(--view-text-muted);
   font: inherit;
   font-size: 0.8125rem;
   cursor: pointer;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background 0.15s ease;
 }
 
-.view-btn:hover {
+.view-topbar__actions .view-btn:hover {
   color: var(--view-text);
-  border-color: var(--view-glass-border);
-  background: var(--view-glass-hover);
 }
 
 .view-btn[aria-expanded='true'] {
@@ -504,12 +522,6 @@ html[data-view-theme='dark'] .view-greeting {
 
 .view-ext-banner {
   padding: 1rem 1.15rem;
-  background: var(--view-glass-bg);
-  border: 1px solid var(--view-glass-border);
-  border-radius: var(--radius-lg);
-  backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  box-shadow: var(--view-glass-shadow);
 }
 
 .view-ext-banner.is-connected {
@@ -538,16 +550,24 @@ html[data-view-theme='dark'] .view-greeting {
 }
 
 .view-btn--accent {
+  border-radius: 999px;
   color: var(--view-accent-text);
   background: var(--view-accent);
   border-color: transparent;
   backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 2px 12px rgba(224, 122, 79, 0.35);
+}
+
+.view-btn--accent::before {
+  display: none;
 }
 
 .view-btn--accent:hover {
   color: var(--view-accent-text);
   filter: brightness(1.08);
   border-color: transparent;
+  background: var(--view-accent);
 }
 
 .view-ext-install {
@@ -579,12 +599,6 @@ html[data-view-theme='dark'] .view-greeting {
 .view-folder-panel {
   display: none;
   padding: 1rem 1.15rem;
-  background: var(--view-glass-bg);
-  border: 1px solid var(--view-glass-border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--view-blur)) saturate(160%);
-  box-shadow: var(--view-glass-shadow);
 }
 
 .view-folder-panel.is-open {
@@ -655,24 +669,12 @@ html[data-view-theme='dark'] .view-greeting {
   align-items: center;
   gap: 0.65rem;
   padding: 0.65rem 0.75rem;
-  background: var(--view-glass-bg);
-  border: 1px solid var(--view-glass-border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  box-shadow: var(--view-glass-shadow);
   color: var(--view-text);
   font-size: 0.875rem;
   text-decoration: none;
-  transition:
-    border-color 0.15s ease,
-    transform 0.1s ease,
-    background 0.15s ease;
 }
 
 .view-bookmark-card:hover {
-  border-color: var(--view-glass-border);
-  background: var(--view-glass-hover);
   transform: translateY(-1px);
   color: var(--view-text);
 }
@@ -707,11 +709,6 @@ html[data-view-theme='dark'] .view-greeting {
   text-align: center;
   color: var(--view-text-muted);
   font-size: 0.875rem;
-  border: 1px dashed var(--view-glass-border-subtle);
-  border-radius: var(--radius);
-  background: var(--view-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 @media (max-width: 520px) {
@@ -727,15 +724,11 @@ html[data-view-theme='dark'] .view-greeting {
 }
 
 @supports not (backdrop-filter: blur(1px)) {
-  .view-search-form,
-  .view-suggest,
-  .view-bg-panel,
-  .view-ext-banner,
-  .view-folder-panel,
-  .view-bookmark-card,
-  .view-btn,
-  .view-engine,
-  .view-empty {
+  .view-glass {
     background: var(--view-glass-bg-strong);
+  }
+
+  .view-glass::before {
+    opacity: 0.35;
   }
 }
