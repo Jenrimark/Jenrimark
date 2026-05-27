@@ -24,13 +24,36 @@ function hostFromUrl(pageUrl: string): string | null {
   }
 }
 
+function hostVariants(host: string): string[] {
+  const out: string[] = [host];
+  if (host.startsWith('www.')) out.push(host.slice(4));
+
+  const parts = host.split('.');
+  if (parts.length > 2) {
+    out.push(parts.slice(-2).join('.'));
+  }
+  return [...new Set(out)];
+}
+
 function faviconProviders(host: string): string[] {
-  return [
-    `https://icons.duckduckgo.com/ip3/${host}.ico`,
-    `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=32`,
-    `https://favicon.yandex.net/favicon/v2/${encodeURIComponent(host)}?size=32`,
-    `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`,
-  ];
+  const urls: string[] = [];
+  const seen = new Set<string>();
+  const add = (url: string) => {
+    if (!seen.has(url)) {
+      seen.add(url);
+      urls.push(url);
+    }
+  };
+
+  for (const h of hostVariants(host)) {
+    add(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=32`);
+    add(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=64`);
+    add(`https://icons.duckduckgo.com/ip3/${h}.ico`);
+    add(`https://favicon.yandex.net/favicon/v2/${encodeURIComponent(h)}?size=32`);
+    add(`https://${h}/favicon.ico`);
+  }
+
+  return urls;
 }
 
 function loadStore(): CacheStore {
