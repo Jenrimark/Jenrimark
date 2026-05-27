@@ -27,6 +27,8 @@ const { title = `View — ${site.name}` } = Astro.props;
     <title>{title}</title>
   </head>
   <body class="view-body">
+    <div id="view-bg" class="view-bg" aria-hidden="true"></div>
+    <div id="view-bg-dim" class="view-bg-dim" aria-hidden="true"></div>
     <slot />
   </body>
 </html>

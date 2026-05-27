@@ -8,8 +8,43 @@ import { searchEngines } from '../data/view-search';
   <div class="view-page">
     <header class="view-topbar">
       <a href="/">← {site.name}</a>
-      <time id="view-clock" class="view-clock" datetime=""></time>
+      <div class="view-topbar__actions">
+        <button
+          type="button"
+          id="view-bg-toggle"
+          class="view-btn view-btn--ghost"
+          aria-expanded="false"
+          aria-controls="view-bg-panel"
+        >
+          换背景
+        </button>
+        <time id="view-clock" class="view-clock" datetime=""></time>
+      </div>
     </header>
+
+    <div id="view-bg-panel" class="view-bg-panel" hidden>
+      <p class="view-bg-panel__title">换背景</p>
+      <p class="view-bg-panel__lead">打开网页即可上传，选图后立刻生效，下次访问会自动恢复。</p>
+
+      <button type="button" id="view-bg-dropzone" class="view-bg-dropzone">
+        <span id="view-bg-dropzone-preview" class="view-bg-dropzone__preview" hidden></span>
+        <span id="view-bg-dropzone-icon" class="view-bg-dropzone__icon">+</span>
+        <span id="view-bg-dropzone-text" class="view-bg-dropzone__text">点击或拖入图片</span>
+        <span class="view-bg-dropzone__hint">jpg / png / webp · 建议 4MB 以内</span>
+      </button>
+
+      <input id="view-bg-upload" type="file" accept="image/*" hidden />
+
+      <div class="view-bg-custom-actions">
+        <button type="button" id="view-bg-default-btn" class="view-btn">恢复默认</button>
+        <button type="button" id="view-bg-clear-custom" class="view-btn" hidden>删除当前图片</button>
+      </div>
+
+      <div class="view-bg-dim-control">
+        <label for="view-bg-dim">暗色遮罩</label>
+        <input id="view-bg-dim" type="range" min="0.2" max="0.85" step="0.05" value="0.55" />
+      </div>
+    </div>
 
     <section class="view-hero" aria-label="搜索">
       <h1 class="view-greeting" id="view-greeting">你好</h1>
