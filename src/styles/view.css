@@ -682,7 +682,7 @@ html[data-view-theme='dark'] .view-greeting {
   height: 20px;
   border-radius: 4px;
   flex-shrink: 0;
-  background: var(--view-glass-hover);
+  background: transparent;
   object-fit: contain;
 }
 
