@@ -25,6 +25,19 @@ const { title = `View — ${site.name}` } = Astro.props;
       rel="stylesheet"
     />
     <title>{title}</title>
+    <script is:inline>
+      (function () {
+        var m = localStorage.getItem('view:theme') || 'auto';
+        var r =
+          m === 'auto'
+            ? window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+            : m;
+        document.documentElement.setAttribute('data-view-theme', r);
+        document.documentElement.setAttribute('data-view-theme-mode', m);
+      })();
+    </script>
   </head>
   <body class="view-body">
     <div id="view-bg" class="view-bg" aria-hidden="true"></div>

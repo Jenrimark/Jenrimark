@@ -9,6 +9,7 @@ import { sampleBookmarkTree, type ViewBookmarkNode } from '../data/view-bookmark
 import { faviconSrcForRender, hydrateFaviconImages, initFaviconRetryOnVisible } from './favicon-cache';
 import { initSearchAutocomplete, saveRecentQuery } from './view-autocomplete';
 import { initViewBackground } from './view-background';
+import { initViewTheme } from './view-theme';
 
 const MSG_SOURCE_PAGE = 'jenrimark-view';
 const MSG_SOURCE_EXT = 'jenrimark-view-ext';
@@ -364,6 +365,7 @@ function initKeyboard() {
 }
 
 export function initViewPage() {
+  initViewTheme();
   initClock();
   initSearch();
   initBookmarks();

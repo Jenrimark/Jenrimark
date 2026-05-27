@@ -24,7 +24,22 @@ function loadCustomSrc(): string | null {
 function loadDim(): number {
   const raw = localStorage.getItem(STORAGE_BG_DIM);
   const n = raw ? Number(raw) : DEFAULT_BG_DIM;
-  return Number.isFinite(n) ? Math.min(0.85, Math.max(0.2, n)) : DEFAULT_BG_DIM;
+  return Number.isFinite(n) ? Math.min(0.85, Math.max(0, n)) : DEFAULT_BG_DIM;
+}
+
+function applyDimOverlay(dim: HTMLElement, value: number, hasPhoto: boolean) {
+  if (!hasPhoto || value <= 0) {
+    dim.hidden = true;
+    dim.style.opacity = '0';
+    return;
+  }
+  dim.hidden = false;
+  dim.style.opacity = String(value);
+}
+
+function updateDimLabel(value: number) {
+  const label = document.getElementById('view-bg-dim-value');
+  if (label) label.textContent = `${Math.round(value * 100)}%`;
 }
 
 export function applyViewBackground(id?: string) {
@@ -34,8 +49,10 @@ export function applyViewBackground(id?: string) {
   const bgId = id ?? loadBgId();
   const src = bgId === 'custom' ? loadCustomSrc() : null;
   const dimValue = loadDim();
+  const hasPhoto = Boolean(src);
 
-  dim.style.opacity = String(dimValue);
+  applyDimOverlay(dim, dimValue, hasPhoto);
+  updateDimLabel(dimValue);
 
   if (!src) {
     body.classList.remove('view-body--photo');
@@ -77,8 +94,12 @@ function syncPanelUI() {
 
   if (clearBtn) clearBtn.hidden = !customSrc;
 
+  const dimWrap = document.getElementById('view-bg-dim-wrap');
   const slider = document.getElementById('view-bg-dim') as HTMLInputElement | null;
-  if (slider) slider.value = String(loadDim());
+  const dimVal = loadDim();
+  if (dimWrap) dimWrap.hidden = !customSrc;
+  if (slider) slider.value = String(dimVal);
+  updateDimLabel(dimVal);
 }
 
 async function handleImageFile(file: File) {
@@ -152,7 +173,9 @@ export function initViewBackground() {
   });
 
   dimSlider?.addEventListener('input', () => {
-    localStorage.setItem(STORAGE_BG_DIM, String(Number(dimSlider.value)));
+    const value = Number(dimSlider.value);
+    localStorage.setItem(STORAGE_BG_DIM, String(value));
+    updateDimLabel(value);
     applyViewBackground();
   });
 

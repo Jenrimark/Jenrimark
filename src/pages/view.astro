@@ -11,6 +11,16 @@ import { searchEngines } from '../data/view-search';
       <div class="view-topbar__actions">
         <button
           type="button"
+          id="view-theme-toggle"
+          class="view-btn view-btn--ghost view-theme-toggle"
+          aria-label="主题：自动"
+          title="主题：自动（点击切换）"
+          data-theme-mode="auto"
+        >
+          <span class="view-theme-toggle__icon" aria-hidden="true"></span>
+        </button>
+        <button
+          type="button"
           id="view-bg-toggle"
           class="view-btn view-btn--ghost"
           aria-expanded="false"
@@ -40,9 +50,10 @@ import { searchEngines } from '../data/view-search';
         <button type="button" id="view-bg-clear-custom" class="view-btn" hidden>删除当前图片</button>
       </div>
 
-      <div class="view-bg-dim-control">
-        <label for="view-bg-dim">暗色遮罩</label>
-        <input id="view-bg-dim" type="range" min="0.2" max="0.85" step="0.05" value="0.55" />
+      <div id="view-bg-dim-wrap" class="view-bg-dim-control" hidden>
+        <label for="view-bg-dim">壁纸暗化</label>
+        <input id="view-bg-dim" type="range" min="0" max="0.85" step="0.05" value="0.45" />
+        <span id="view-bg-dim-value" class="view-bg-dim-value">45%</span>
       </div>
     </div>
 

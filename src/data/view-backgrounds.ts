@@ -17,4 +17,4 @@ export const viewBackgrounds: ViewBackground[] = [
 export const STORAGE_BG_ID = 'view:background-id';
 export const STORAGE_BG_CUSTOM = 'view:background-custom';
 export const STORAGE_BG_DIM = 'view:background-dim';
-export const DEFAULT_BG_DIM = 0.55;
+export const DEFAULT_BG_DIM = 0.45;
