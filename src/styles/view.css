@@ -380,19 +380,16 @@ html[data-view-theme='dark'] .view-greeting {
   position: relative;
 }
 
-/* 搜索框背后：高光 + feDisplacementMap，仅扭曲装饰层，不碰文字 */
-.view-search-deco {
-  position: absolute;
-  inset: -4px;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 999px;
-  overflow: hidden;
+.view-search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.65rem 0.65rem 1.1rem;
 }
 
-.view-search-deco__smear {
-  position: absolute;
-  inset: -40% -25%;
+/* 液态高光画在表单内层 ::before，避免与玻璃底板叠成两层 */
+.view-search-form.view-glass::before {
+  inset: 0;
   background:
     radial-gradient(ellipse 100% 70% at 50% -5%, var(--view-liquid-sheen), transparent 58%),
     linear-gradient(108deg, transparent 32%, var(--view-liquid-sheen-2) 50%, transparent 68%);
@@ -400,20 +397,9 @@ html[data-view-theme='dark'] .view-greeting {
   filter: url(#view-liquid-smear);
 }
 
-.view-search-form {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.65rem 0.65rem 1.1rem;
-}
-
 .view-search-form:focus-within {
-  border-color: var(--view-accent);
-  box-shadow:
-    var(--view-glass-shadow),
-    0 0 0 3px var(--view-accent-soft);
+  border-color: var(--view-glass-border);
+  box-shadow: var(--view-glass-shadow);
 }
 
 .view-search-input {
@@ -769,10 +755,6 @@ html[data-view-theme='dark'] .view-btn--accent {
 }
 
 @media (max-width: 520px) {
-  .view-search-deco {
-    border-radius: var(--radius-lg);
-  }
-
   .view-search-form {
     flex-wrap: wrap;
     border-radius: var(--radius-lg);
@@ -799,7 +781,7 @@ html[data-view-theme='dark'] .view-btn--accent {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .view-search-deco__smear {
+  .view-search-form.view-glass::before {
     filter: none;
   }
 }
