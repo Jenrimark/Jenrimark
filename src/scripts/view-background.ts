@@ -57,12 +57,10 @@ export function applyViewBackground(id?: string) {
   if (!src) {
     body.classList.remove('view-body--photo');
     bg.style.backgroundImage = '';
-    bg.classList.add('view-bg--default');
     return;
   }
 
   body.classList.add('view-body--photo');
-  bg.classList.remove('view-bg--default');
   bg.style.backgroundImage = `url("${src.replace(/"/g, '\\"')}")`;
 }
 
