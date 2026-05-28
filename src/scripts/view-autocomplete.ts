@@ -118,10 +118,8 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit, dismis
 
     list.innerHTML = items
       .map(
-        (item, i) => `<li class="view-suggest__item" role="option" data-index="${i}" aria-selected="${i === activeIndex}">
-          <span class="view-suggest__kind">${item.kind === 'recent' ? '最近' : '联想'}</span>
-          <span class="view-suggest__text">${escapeHtml(item.text)}</span>
-        </li>`,
+        (item, i) =>
+          `<li class="view-suggest__item" role="option" data-index="${i}" aria-selected="${i === activeIndex}">${escapeHtml(item.text)}</li>`,
       )
       .join('');
 

@@ -478,36 +478,26 @@ html[data-view-theme='dark'] .view-greeting {
   /* 限制高度，减少向下盖住搜索引擎按钮区的面积 */
   max-height: min(11rem, 38vh);
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.view-suggest::-webkit-scrollbar {
+  display: none;
 }
 
 .view-suggest__item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
   padding: 0.55rem 0.65rem;
   border-radius: 10px;
   font-size: 0.875rem;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .view-suggest__item:hover,
 .view-suggest__item.is-active {
   background: var(--view-glass-hover);
-}
-
-.view-suggest__kind {
-  flex-shrink: 0;
-  min-width: 2.25rem;
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--view-text-muted);
-}
-
-.view-suggest__text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .view-toolbar {
