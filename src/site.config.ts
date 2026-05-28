@@ -3,7 +3,7 @@ export const site = {
   name: 'Jenrimark',
   title: 'Jenrimark — 个人站点',
   description: '开发者 · 写代码 · 记笔记 · 分享见闻',
-  url: 'https://yourdomain.com',
+  url: 'http://47.122.127.145:23333',
   author: '吴汉东',
   locale: 'zh-CN',
   social: {

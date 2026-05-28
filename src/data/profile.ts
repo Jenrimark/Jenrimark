@@ -42,7 +42,7 @@ export const profile = {
     },
   ],
   featuredProject: {
-    name: 'LIttle-Wechat',
+    name: 'Little-Wechat',
     badge: '代表作',
     description: '即时通讯系统 — WebSocket 实时消息 · Redis 在线状态 · Electron 桌面端',
     href: 'https://github.com/Jenrimark',
@@ -117,7 +117,7 @@ export const profile = {
       icon: 'code',
       projects: [
         {
-          title: 'LIttle-Wechat',
+          title: 'Little-Wechat',
           description:
             '独立完成登录、聊天、好友列表等核心模块；WebSocket 实时通信（延迟 <100ms），Redis 缓存在线状态与聊天数据，数据库查询压力降约 60%，Electron 跨平台桌面端。',
           href: 'https://github.com/Jenrimark',
@@ -127,7 +127,7 @@ export const profile = {
         {
           title: 'Jenrimark 个人站',
           description: 'Astro 静态站，Git push 触发 Webhook 自动部署至家里 Windows + Nginx。',
-          href: 'https://github.com/Jenrimark',
+          href: 'https://github.com/Jenrimark/Jenrimark',
           meta: 'Astro · CI/CD',
           color: '#6b8cce',
         },
@@ -142,7 +142,7 @@ export const profile = {
           title: '灵犀旅行',
           description:
             'AI 旅游平台，独立开发路线推荐与景点展示；百度地图 + ECharts 可视化，Redis 缓存与 MySQL 查询优化，接口响应 300ms 内。',
-          href: 'https://github.com/Jenrimark',
+          href: 'https://github.com/Jenrimark/LingXi-AI-Travel',
           meta: 'SpringBoot · Vue3 · React · ECharts',
           color: '#5aab8c',
         },
@@ -157,7 +157,7 @@ export const profile = {
           title: '蝶启新生 · 健康管理',
           description:
             'Vue3 + Go/Gin 全栈，JWT 无状态鉴权；Redis 缓存使查询效率提升约 50%，核心接口由 900ms 降至 400ms；ECharts 多维健康分析，Nginx 反向代理部署。',
-          href: 'https://github.com/Jenrimark',
+          href: 'https://github.com/Jenrimark/Health-Management',
           meta: 'Gin · Vue3 · JWT · GORM',
           color: '#b07ad9',
         },

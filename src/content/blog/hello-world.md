@@ -16,8 +16,7 @@ tags: [astro, mvp]
 
 ## 下一步
 
-1. 改 `src/site.config.ts` 里的域名和社交链接
-2. 在 `src/content/blog/` 下继续加 Markdown
-3. 把 Bento 卡片里的项目链接换成真实仓库
+1. 在 `src/content/blog/` 下继续加 Markdown
+2. 有公开仓库的项目链接已在 `src/data/profile.ts` 维护，其余待开源后补上
 
 写就完事了。
