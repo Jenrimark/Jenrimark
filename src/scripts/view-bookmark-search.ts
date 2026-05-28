@@ -1,9 +1,5 @@
 import type { ViewBookmarkNode } from '../data/view-bookmarks.sample';
 
-export type BookmarkSortMode = 'relevance' | 'title-asc' | 'title-desc';
-
-export const STORAGE_BM_SORT = 'view:suggest-bm-sort';
-
 export interface FlatBookmark {
   id: string;
   title: string;
@@ -67,41 +63,18 @@ function scoreBookmark(item: FlatBookmark, q: string): number {
   return 0;
 }
 
-export function searchBookmarks(
-  items: FlatBookmark[],
-  query: string,
-  sort: BookmarkSortMode,
-  limit = 12,
-): FlatBookmark[] {
+/** 有关键词时按相关度；无关键词时按标题列出前若干条 */
+export function searchBookmarks(items: FlatBookmark[], query: string, limit = 12): FlatBookmark[] {
   const q = query.trim().toLowerCase();
 
-  let hits = q
-    ? items
-        .map((item) => ({ item, score: scoreBookmark(item, q) }))
-        .filter((x) => x.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .map((x) => x.item)
-    : [...items];
-
-  if (sort === 'title-asc' || (!q && sort === 'relevance')) {
-    hits.sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'));
-  } else if (sort === 'title-desc') {
-    hits.sort((a, b) => b.title.localeCompare(a.title, 'zh-CN'));
-  } else if (q && sort === 'relevance') {
-    hits.sort((a, b) => scoreBookmark(b, q) - scoreBookmark(a, q));
+  if (!q) {
+    return [...items].sort((a, b) => a.title.localeCompare(b.title, 'zh-CN')).slice(0, limit);
   }
 
-  return hits.slice(0, limit);
-}
-
-export function loadBookmarkSort(): BookmarkSortMode {
-  const stored = localStorage.getItem(STORAGE_BM_SORT);
-  if (stored === 'title-asc' || stored === 'title-desc' || stored === 'relevance') {
-    return stored;
-  }
-  return 'relevance';
-}
-
-export function saveBookmarkSort(mode: BookmarkSortMode): void {
-  localStorage.setItem(STORAGE_BM_SORT, mode);
+  return items
+    .map((item) => ({ item, score: scoreBookmark(item, q) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((x) => x.item)
+    .slice(0, limit);
 }

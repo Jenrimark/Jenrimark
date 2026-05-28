@@ -2,14 +2,7 @@
 
 import { faviconSrcForRender, hydrateFaviconImages } from './favicon-cache';
 import { getBookmarkTree, onBookmarksChange } from './view-bookmarks-state';
-import {
-  flattenAllBookmarks,
-  loadBookmarkSort,
-  saveBookmarkSort,
-  searchBookmarks,
-  type BookmarkSortMode,
-  type FlatBookmark,
-} from './view-bookmark-search';
+import { flattenAllBookmarks, searchBookmarks, type FlatBookmark } from './view-bookmark-search';
 
 const STORAGE_RECENT = 'view:search-recent';
 const MAX_RECENT = 8;
@@ -20,7 +13,6 @@ interface InitOptions {
   panel: HTMLElement;
   queryList: HTMLUListElement;
   bookmarkList: HTMLUListElement;
-  sortSelect: HTMLSelectElement;
   isGoogle: () => boolean;
   onSubmit: (query: string) => void;
   dismissRoots?: HTMLElement[];
@@ -117,7 +109,6 @@ export function initSearchAutocomplete({
   panel,
   queryList,
   bookmarkList,
-  sortSelect,
   isGoogle,
   onSubmit,
   dismissRoots = [],
@@ -128,16 +119,6 @@ export function initSearchAutocomplete({
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let requestId = 0;
   let skipSuggestOnNextFocus = false;
-  let bookmarkSort: BookmarkSortMode = loadBookmarkSort();
-
-  sortSelect.value = bookmarkSort;
-  sortSelect.addEventListener('change', () => {
-    const next = sortSelect.value as BookmarkSortMode;
-    if (next !== 'relevance' && next !== 'title-asc' && next !== 'title-desc') return;
-    bookmarkSort = next;
-    saveBookmarkSort(next);
-    void update();
-  });
 
   const hide = () => {
     panel.hidden = true;
@@ -258,7 +239,7 @@ export function initSearchAutocomplete({
     queryItems = mergeQuerySuggestions(recent, google);
 
     const flat = flattenAllBookmarks(getBookmarkTree());
-    bookmarkItems = searchBookmarks(flat, query, bookmarkSort);
+    bookmarkItems = searchBookmarks(flat, query);
 
     active = null;
     render();

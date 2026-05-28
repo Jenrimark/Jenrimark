@@ -1,5 +1,7 @@
 ---
 import ViewLayout from '../layouts/ViewLayout.astro';
+import ClearIcon from '../components/ClearIcon.astro';
+import SearchIcon from '../components/SearchIcon.astro';
 import { site } from '../site.config';
 import { searchEngines } from '../data/view-search';
 ---
@@ -67,8 +69,10 @@ import { searchEngines } from '../data/view-search';
               <input
                 id="view-search-input"
                 class="view-search-input"
-                type="search"
+                type="text"
                 name="q"
+                enterkeyhint="search"
+                inputmode="search"
                 autocomplete="off"
                 autocapitalize="off"
                 spellcheck="false"
@@ -77,7 +81,12 @@ import { searchEngines } from '../data/view-search';
                 aria-controls="view-suggest"
                 aria-autocomplete="list"
               />
-              <button type="submit" class="view-search-submit">搜索</button>
+              <button type="button" id="view-search-clear" class="view-search-clear" hidden aria-label="清空">
+                <ClearIcon />
+              </button>
+              <button type="submit" class="view-search-submit" aria-label="搜索">
+                <SearchIcon />
+              </button>
             </form>
           </div>
 
@@ -98,18 +107,12 @@ import { searchEngines } from '../data/view-search';
 
           <div id="view-suggest" class="view-suggest view-glass view-glass--strong view-glass--card" hidden>
             <div class="view-suggest__cols">
-              <div class="view-suggest__col">
+              <div class="view-suggest__col view-suggest__col--query">
+                <p class="view-suggest__col-title">搜索</p>
                 <ul id="view-suggest-query" class="view-suggest__list" role="listbox" aria-label="搜索候选"></ul>
               </div>
               <div class="view-suggest__col view-suggest__col--bookmarks">
-                <div class="view-suggest__bm-toolbar">
-                  <label class="view-suggest__bm-sort-label" for="view-suggest-bm-sort">排序</label>
-                  <select id="view-suggest-bm-sort" class="view-suggest__bm-sort">
-                    <option value="relevance">相关度</option>
-                    <option value="title-asc">标题 A→Z</option>
-                    <option value="title-desc">标题 Z→A</option>
-                  </select>
-                </div>
+                <p class="view-suggest__col-title">书签</p>
                 <ul id="view-suggest-bookmarks" class="view-suggest__list" role="listbox" aria-label="书签"></ul>
               </div>
             </div>

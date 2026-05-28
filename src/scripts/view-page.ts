@@ -183,12 +183,12 @@ function escapeAttr(s: string): string {
 function initSearch() {
   const form = document.getElementById('view-search-form') as HTMLFormElement | null;
   const input = document.getElementById('view-search-input') as HTMLInputElement | null;
+  const clearBtn = document.getElementById('view-search-clear') as HTMLButtonElement | null;
   const suggestPanel = document.getElementById('view-suggest');
   const suggestQuery = document.getElementById('view-suggest-query') as HTMLUListElement | null;
   const suggestBookmarks = document.getElementById('view-suggest-bookmarks') as HTMLUListElement | null;
-  const suggestBmSort = document.getElementById('view-suggest-bm-sort') as HTMLSelectElement | null;
   const enginesEl = document.getElementById('view-engines');
-  if (!form || !input || !enginesEl || !suggestPanel || !suggestQuery || !suggestBookmarks || !suggestBmSort) {
+  if (!form || !input || !enginesEl || !suggestPanel || !suggestQuery || !suggestBookmarks) {
     return;
   }
 
@@ -210,15 +210,19 @@ function initSearch() {
     localStorage.setItem(STORAGE_ENGINE, engineId);
   };
 
+  const syncClearBtn = () => {
+    if (!clearBtn) return;
+    clearBtn.hidden = !input.value;
+  };
+
   const autocomplete = initSearchAutocomplete({
     input,
     panel: suggestPanel,
     queryList: suggestQuery,
     bookmarkList: suggestBookmarks,
-    sortSelect: suggestBmSort,
     isGoogle: () => engineId === 'google',
     onSubmit: submitQuery,
-    dismissRoots: [enginesEl],
+    dismissRoots: [enginesEl, form],
   });
 
   enginesEl.querySelectorAll<HTMLButtonElement>('.view-engine').forEach((btn) => {
@@ -237,7 +241,25 @@ function initSearch() {
     submitQuery(input.value);
   });
 
+  form.addEventListener('mousedown', (e) => {
+    const target = e.target as Node;
+    if (target === input) return;
+    if (target instanceof Element && target.closest('button')) return;
+    e.preventDefault();
+    input.focus();
+  });
+
+  input.addEventListener('input', syncClearBtn);
+
+  clearBtn?.addEventListener('click', () => {
+    input.value = '';
+    syncClearBtn();
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.focus();
+  });
+
   applyEngine();
+  syncClearBtn();
   autocomplete.skipNextFocusSuggest();
   input.focus();
 }
