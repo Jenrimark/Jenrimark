@@ -103,6 +103,24 @@ const viewBgPresets = Object.fromEntries(
           filterUnits="objectBoundingBox"
           color-interpolation-filters="sRGB"
         >
+          <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="7" result="noise" />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="10"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+        <filter
+          id="view-liquid-smear-dark"
+          x="-15%"
+          y="-15%"
+          width="130%"
+          height="130%"
+          filterUnits="objectBoundingBox"
+          color-interpolation-filters="sRGB"
+        >
           <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="noise" />
           <feDisplacementMap
             in="SourceGraphic"
