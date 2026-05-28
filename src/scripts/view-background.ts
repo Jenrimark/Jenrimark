@@ -1,9 +1,20 @@
 import {
+  viewBackgrounds,
   STORAGE_BG_ID,
   STORAGE_BG_CUSTOM,
   STORAGE_BG_DIM,
   DEFAULT_BG_DIM,
 } from '../data/view-backgrounds';
+
+function removeBgBootStyle() {
+  document.getElementById('view-bg-boot')?.remove();
+}
+
+function resolveBgSrc(bgId: string): string | null {
+  if (bgId === 'custom') return loadCustomSrc();
+  const preset = viewBackgrounds.find((b) => b.id === bgId);
+  return preset?.src ?? null;
+}
 
 function getLayers() {
   return {
@@ -47,7 +58,7 @@ export function applyViewBackground(id?: string) {
   if (!bg || !dim) return;
 
   const bgId = id ?? loadBgId();
-  const src = bgId === 'custom' ? loadCustomSrc() : null;
+  const src = resolveBgSrc(bgId);
   const dimValue = loadDim();
   const hasPhoto = Boolean(src);
 
@@ -58,12 +69,14 @@ export function applyViewBackground(id?: string) {
     body.classList.remove('view-body--photo');
     bg.style.backgroundImage = '';
     bg.classList.add('view-bg--default');
+    removeBgBootStyle();
     return;
   }
 
   body.classList.add('view-body--photo');
   bg.classList.remove('view-bg--default');
   bg.style.backgroundImage = `url("${src.replace(/"/g, '\\"')}")`;
+  removeBgBootStyle();
 }
 
 function saveSelection(id: string) {
@@ -132,6 +145,7 @@ export function initViewBackground() {
   const dimSlider = document.getElementById('view-bg-dim') as HTMLInputElement | null;
 
   applyViewBackground();
+  removeBgBootStyle();
   syncPanelUI();
 
   const openUpload = () => upload?.click();
