@@ -31,11 +31,13 @@ npm run zip:extension
 | 权限 | 用途 |
 |------|------|
 | `bookmarks` | 读取书签树，书签变更时刷新页面 |
-| `host_permissions` | 仅在 `localhost` 与你的站点 `/view/` 注入脚本 |
+| `host_permissions` | 仅在 `localhost`、公网域名/IP 与你的站点 `/view/` 注入脚本 |
 
 ## 添加新域名
 
-若更换访问域名，需同时修改：
+当前公网入口：`gd02.frp0.cc:23333` 与 `47.122.127.145:23333`（并存）。
+
+若更换或新增访问域名/IP，需同时修改：
 
 1. `extension/manifest.json` → `host_permissions` 与 `content_scripts.matches`
 2. `extension/content.js` → `ALLOWED_ORIGIN_PREFIXES`

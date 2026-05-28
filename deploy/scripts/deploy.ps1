@@ -78,4 +78,4 @@ if ($buildResolved -eq $deployResolved) {
 Write-Host ""
 Write-Host "Done: $DeployPath"
 Write-Host "Local:  http://127.0.0.1:8080/"
-Write-Host "Public: http://gd02.frp0.cc:23333/ (if frpc is running)"
+Write-Host "Public: http://gd02.frp0.cc:23333/ | http://47.122.127.145:23333/ (if frpc is running)"

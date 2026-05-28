@@ -1,6 +1,7 @@
 # On push to main: ping home Windows webhook (instant deploy, no 5-min poll)
 # Repo Secrets required:
-#   HOME_WEBHOOK_URL  e.g. http://gd02.frp0.cc:23334/webhook?token=YOUR_SECRET
+#   HOME_WEBHOOK_URL  e.g. http://47.122.127.145:23334/webhook?token=YOUR_SECRET
+#                     or http://gd02.frp0.cc:23334/webhook?token=YOUR_SECRET
 
 name: Trigger home deploy
 

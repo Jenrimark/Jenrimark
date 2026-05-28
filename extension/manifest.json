@@ -7,7 +7,8 @@
   "host_permissions": [
     "http://localhost/*",
     "http://127.0.0.1/*",
-    "http://gd02.frp0.cc:23333/*"
+    "http://gd02.frp0.cc:23333/*",
+    "http://47.122.127.145:23333/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -23,7 +24,10 @@
         "http://127.0.0.1/*/view/*",
         "http://gd02.frp0.cc:23333/view",
         "http://gd02.frp0.cc:23333/view/",
-        "http://gd02.frp0.cc:23333/view/*"
+        "http://gd02.frp0.cc:23333/view/*",
+        "http://47.122.127.145:23333/view",
+        "http://47.122.127.145:23333/view/",
+        "http://47.122.127.145:23333/view/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"

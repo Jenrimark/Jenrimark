@@ -6,6 +6,7 @@ const ALLOWED_ORIGIN_PREFIXES = [
   'http://localhost:',
   'http://127.0.0.1:',
   'http://gd02.frp0.cc:23333',
+  'http://47.122.127.145:23333',
 ];
 
 function isAllowedOrigin(origin) {
