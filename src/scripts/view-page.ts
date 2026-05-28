@@ -212,14 +212,6 @@ function initSearch() {
     dismissRoots: [enginesEl],
   });
 
-  const onEngineInteract = (e: Event) => {
-    // 联想层曾盖住引擎按钮时，须先收起再处理点击，避免 mousedown 误触发 pick()
-    e.preventDefault();
-    autocomplete.skipNextFocusSuggest();
-  };
-
-  enginesEl.addEventListener('mousedown', onEngineInteract);
-
   enginesEl.querySelectorAll<HTMLButtonElement>('.view-engine').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.engine as SearchEngineId | undefined;
