@@ -478,14 +478,64 @@ html[data-view-theme='dark'] .view-greeting {
   left: 0;
   right: 0;
   margin: 0;
-  padding: 0.35rem;
+  padding: 0.45rem;
+}
+
+.view-suggest__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  min-height: 0;
+}
+
+.view-suggest__col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.view-suggest__col--bookmarks {
+  border-left: 1px solid var(--view-glass-border-subtle);
+  padding-left: 0.5rem;
+}
+
+.view-suggest__bm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.25rem;
+  flex-shrink: 0;
+}
+
+.view-suggest__bm-sort-label {
+  font-size: 0.75rem;
+  color: var(--view-text-muted);
+  white-space: nowrap;
+}
+
+.view-suggest__bm-sort {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.45rem;
+  border-radius: 8px;
+  border: 1px solid var(--view-glass-border-subtle);
+  background: var(--view-glass-bg);
+  color: var(--view-text);
+  font: inherit;
+  font-size: 0.75rem;
+}
+
+.view-suggest__list {
+  margin: 0;
+  padding: 0;
   list-style: none;
-  max-height: min(11rem, 38vh);
+  max-height: min(14rem, 42vh);
   overflow-y: auto;
   scrollbar-width: none;
 }
 
-.view-suggest::-webkit-scrollbar {
+.view-suggest__list::-webkit-scrollbar {
   display: none;
 }
 
@@ -499,9 +549,63 @@ html[data-view-theme='dark'] .view-greeting {
   white-space: nowrap;
 }
 
+.view-suggest__item--bookmark {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: normal;
+}
+
+.view-suggest__item--bookmark img {
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.view-suggest__bookmark-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.view-suggest__bookmark-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.view-suggest__bookmark-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  color: var(--view-text-muted);
+}
+
+.view-suggest__empty {
+  padding: 0.55rem 0.65rem;
+  font-size: 0.8125rem;
+  color: var(--view-text-muted);
+  list-style: none;
+}
+
 .view-suggest__item:hover,
 .view-suggest__item.is-active {
   background: var(--view-glass-hover);
+}
+
+@media (max-width: 520px) {
+  .view-suggest__cols {
+    grid-template-columns: 1fr;
+  }
+
+  .view-suggest__col--bookmarks {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid var(--view-glass-border-subtle);
+    padding-top: 0.5rem;
+  }
 }
 
 .view-toolbar {

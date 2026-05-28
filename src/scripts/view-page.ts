@@ -8,6 +8,7 @@ import {
 import { sampleBookmarkTree, type ViewBookmarkNode } from '../data/view-bookmarks.sample';
 import { faviconSrcForRender, hydrateFaviconImages, initFaviconRetryOnVisible } from './favicon-cache';
 import { initSearchAutocomplete, saveRecentQuery } from './view-autocomplete';
+import { updateBookmarks } from './view-bookmarks-state';
 import { initViewBackground } from './view-background';
 import { initViewTheme } from './view-theme';
 
@@ -182,9 +183,14 @@ function escapeAttr(s: string): string {
 function initSearch() {
   const form = document.getElementById('view-search-form') as HTMLFormElement | null;
   const input = document.getElementById('view-search-input') as HTMLInputElement | null;
-  const suggest = document.getElementById('view-suggest') as HTMLUListElement | null;
+  const suggestPanel = document.getElementById('view-suggest');
+  const suggestQuery = document.getElementById('view-suggest-query') as HTMLUListElement | null;
+  const suggestBookmarks = document.getElementById('view-suggest-bookmarks') as HTMLUListElement | null;
+  const suggestBmSort = document.getElementById('view-suggest-bm-sort') as HTMLSelectElement | null;
   const enginesEl = document.getElementById('view-engines');
-  if (!form || !input || !enginesEl || !suggest) return;
+  if (!form || !input || !enginesEl || !suggestPanel || !suggestQuery || !suggestBookmarks || !suggestBmSort) {
+    return;
+  }
 
   let engineId = loadEngineId();
 
@@ -206,7 +212,10 @@ function initSearch() {
 
   const autocomplete = initSearchAutocomplete({
     input,
-    list: suggest,
+    panel: suggestPanel,
+    queryList: suggestQuery,
+    bookmarkList: suggestBookmarks,
+    sortSelect: suggestBmSort,
     isGoogle: () => engineId === 'google',
     onSubmit: submitQuery,
     dismissRoots: [enginesEl],
@@ -263,6 +272,7 @@ function initBookmarks() {
     const sections = extractSections(tree, filter);
     renderBookmarks(sections, container);
     bindFaviconRetry(container);
+    updateBookmarks(tree, filter);
   };
 
   const extBanner = document.getElementById('view-ext-banner');

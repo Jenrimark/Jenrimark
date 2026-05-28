@@ -1,4 +1,15 @@
-/** Google 搜索联想 + 本页最近搜索记录 */
+/** 双列联想：左列搜索候选，右列书签筛选 */
+
+import { faviconSrcForRender, hydrateFaviconImages } from './favicon-cache';
+import { getBookmarkTree, onBookmarksChange } from './view-bookmarks-state';
+import {
+  flattenAllBookmarks,
+  loadBookmarkSort,
+  saveBookmarkSort,
+  searchBookmarks,
+  type BookmarkSortMode,
+  type FlatBookmark,
+} from './view-bookmark-search';
 
 const STORAGE_RECENT = 'view:search-recent';
 const MAX_RECENT = 8;
@@ -6,10 +17,12 @@ const DEBOUNCE_MS = 160;
 
 interface InitOptions {
   input: HTMLInputElement;
-  list: HTMLUListElement;
+  panel: HTMLElement;
+  queryList: HTMLUListElement;
+  bookmarkList: HTMLUListElement;
+  sortSelect: HTMLSelectElement;
   isGoogle: () => boolean;
   onSubmit: (query: string) => void;
-  /** 点击这些区域时收起联想（如搜索引擎按钮区） */
   dismissRoots?: HTMLElement[];
 }
 
@@ -72,83 +85,165 @@ function fetchGoogleSuggestions(query: string): Promise<string[]> {
   });
 }
 
-type SuggestItem = { text: string; kind: 'recent' | 'google' };
+type QueryItem = { text: string };
 
-function mergeSuggestions(recent: string[], google: string[]): SuggestItem[] {
+function mergeQuerySuggestions(recent: string[], google: string[]): QueryItem[] {
   const seen = new Set<string>();
-  const out: SuggestItem[] = [];
+  const out: QueryItem[] = [];
   for (const text of recent) {
     const key = text.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push({ text, kind: 'recent' });
+    out.push({ text });
     if (out.length >= 10) return out;
   }
   for (const text of google) {
     const key = text.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push({ text, kind: 'google' });
+    out.push({ text });
     if (out.length >= 10) break;
   }
   return out;
 }
 
-export function initSearchAutocomplete({ input, list, isGoogle, onSubmit, dismissRoots = [] }: InitOptions) {
-  let activeIndex = -1;
-  let items: SuggestItem[] = [];
+type ActiveTarget =
+  | { col: 'query'; index: number }
+  | { col: 'bookmark'; index: number }
+  | null;
+
+export function initSearchAutocomplete({
+  input,
+  panel,
+  queryList,
+  bookmarkList,
+  sortSelect,
+  isGoogle,
+  onSubmit,
+  dismissRoots = [],
+}: InitOptions) {
+  let queryItems: QueryItem[] = [];
+  let bookmarkItems: FlatBookmark[] = [];
+  let active: ActiveTarget = null;
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let requestId = 0;
-  /** 切换搜索引擎等操作后的 focus 不应立刻弹出「最近」列表 */
   let skipSuggestOnNextFocus = false;
+  let bookmarkSort: BookmarkSortMode = loadBookmarkSort();
+
+  sortSelect.value = bookmarkSort;
+  sortSelect.addEventListener('change', () => {
+    const next = sortSelect.value as BookmarkSortMode;
+    if (next !== 'relevance' && next !== 'title-asc' && next !== 'title-desc') return;
+    bookmarkSort = next;
+    saveBookmarkSort(next);
+    void update();
+  });
 
   const hide = () => {
-    list.hidden = true;
-    list.innerHTML = '';
-    activeIndex = -1;
-    items = [];
+    panel.hidden = true;
+    queryList.innerHTML = '';
+    bookmarkList.innerHTML = '';
+    queryItems = [];
+    bookmarkItems = [];
+    active = null;
     input.setAttribute('aria-expanded', 'false');
   };
 
-  const render = () => {
-    if (items.length === 0) {
-      hide();
-      return;
-    }
-
-    list.innerHTML = items
-      .map(
-        (item, i) =>
-          `<li class="view-suggest__item" role="option" data-index="${i}" aria-selected="${i === activeIndex}">${escapeHtml(item.text)}</li>`,
-      )
-      .join('');
-
-    list.hidden = false;
+  const show = () => {
+    panel.hidden = false;
     input.setAttribute('aria-expanded', 'true');
-
-    list.querySelectorAll<HTMLLIElement>('.view-suggest__item').forEach((el) => {
-      el.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        const idx = Number(el.dataset.index);
-        pick(items[idx]);
-      });
-    });
   };
 
-  const pick = (item: SuggestItem | undefined) => {
+  const pickQuery = (item: QueryItem | undefined) => {
     if (!item) return;
     input.value = item.text;
     hide();
     onSubmit(item.text);
   };
 
-  const highlight = () => {
-    list.querySelectorAll<HTMLLIElement>('.view-suggest__item').forEach((el, i) => {
-      el.setAttribute('aria-selected', String(i === activeIndex));
-      el.classList.toggle('is-active', i === activeIndex);
+  const pickBookmark = (item: FlatBookmark | undefined) => {
+    if (!item) return;
+    hide();
+    window.open(item.url, '_blank', 'noopener,noreferrer');
+  };
+
+  const bindQueryItems = () => {
+    queryList.querySelectorAll<HTMLLIElement>('.view-suggest__item').forEach((el) => {
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        pickQuery(queryItems[Number(el.dataset.index)]);
+      });
     });
-    const active = list.querySelector<HTMLLIElement>(`.view-suggest__item[data-index="${activeIndex}"]`);
-    active?.scrollIntoView({ block: 'nearest' });
+  };
+
+  const bindBookmarkItems = () => {
+    bookmarkList.querySelectorAll<HTMLLIElement>('.view-suggest__item--bookmark').forEach((el) => {
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        pickBookmark(bookmarkItems[Number(el.dataset.index)]);
+      });
+    });
+    hydrateFaviconImages(bookmarkList);
+  };
+
+  const highlight = () => {
+    queryList.querySelectorAll<HTMLLIElement>('.view-suggest__item').forEach((el) => {
+      const i = Number(el.dataset.index);
+      const on = active?.col === 'query' && active.index === i;
+      el.classList.toggle('is-active', on);
+      el.setAttribute('aria-selected', String(on));
+    });
+    bookmarkList.querySelectorAll<HTMLLIElement>('.view-suggest__item--bookmark').forEach((el) => {
+      const i = Number(el.dataset.index);
+      const on = active?.col === 'bookmark' && active.index === i;
+      el.classList.toggle('is-active', on);
+      el.setAttribute('aria-selected', String(on));
+    });
+
+    const activeEl =
+      active?.col === 'query'
+        ? queryList.querySelector<HTMLElement>(`[data-index="${active.index}"]`)
+        : active?.col === 'bookmark'
+          ? bookmarkList.querySelector<HTMLElement>(`[data-index="${active.index}"]`)
+          : null;
+    activeEl?.scrollIntoView({ block: 'nearest' });
+  };
+
+  const render = () => {
+    if (queryItems.length === 0 && bookmarkItems.length === 0) {
+      hide();
+      return;
+    }
+
+    queryList.innerHTML =
+      queryItems.length === 0
+        ? '<li class="view-suggest__empty">无搜索候选</li>'
+        : queryItems
+            .map(
+              (item, i) =>
+                `<li class="view-suggest__item" role="option" data-index="${i}">${escapeHtml(item.text)}</li>`,
+            )
+            .join('');
+
+    bookmarkList.innerHTML =
+      bookmarkItems.length === 0
+        ? '<li class="view-suggest__empty">无匹配书签</li>'
+        : bookmarkItems
+            .map(
+              (item, i) => `<li class="view-suggest__item view-suggest__item--bookmark" role="option" data-index="${i}">
+          <img src="${escapeAttr(faviconSrcForRender(item.url))}" data-favicon data-favicon-state="pending" alt="" width="18" height="18" decoding="async" referrerpolicy="no-referrer" />
+          <span class="view-suggest__bookmark-text">
+            <span class="view-suggest__bookmark-title">${escapeHtml(item.title)}</span>
+            ${item.folderPath ? `<span class="view-suggest__bookmark-path">${escapeHtml(item.folderPath)}</span>` : ''}
+          </span>
+        </li>`,
+            )
+            .join('');
+
+    show();
+    bindQueryItems();
+    bindBookmarkItems();
+    highlight();
   };
 
   const update = async () => {
@@ -160,12 +255,18 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit, dismis
 
     if (id !== requestId) return;
 
-    items = mergeSuggestions(recent, google);
-    // 不默认选中第一项，避免聚焦后误按 Enter 提交「最近」
-    activeIndex = -1;
+    queryItems = mergeQuerySuggestions(recent, google);
+
+    const flat = flattenAllBookmarks(getBookmarkTree());
+    bookmarkItems = searchBookmarks(flat, query, bookmarkSort);
+
+    active = null;
     render();
-    highlight();
   };
+
+  onBookmarksChange(() => {
+    if (!panel.hidden) void update();
+  });
 
   input.addEventListener('input', () => {
     if (debounceTimer) clearTimeout(debounceTimer);
@@ -182,32 +283,61 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit, dismis
     void update();
   });
 
-  input.addEventListener('keydown', (e) => {
-    if (list.hidden || items.length === 0) return;
+  const colLength = (col: 'query' | 'bookmark') => (col === 'query' ? queryItems.length : bookmarkItems.length);
 
-    if (e.key === 'ArrowDown') {
+  input.addEventListener('keydown', (e) => {
+    if (panel.hidden) return;
+
+    const hasQuery = queryItems.length > 0;
+    const hasBookmark = bookmarkItems.length > 0;
+    if (!hasQuery && !hasBookmark) return;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      if (!hasQuery || !hasBookmark) return;
       e.preventDefault();
-      activeIndex = activeIndex < 0 ? 0 : Math.min(activeIndex + 1, items.length - 1);
+      if (e.key === 'ArrowRight') {
+        active = hasBookmark ? { col: 'bookmark', index: active?.col === 'bookmark' ? active.index : 0 } : active;
+      } else {
+        active = hasQuery ? { col: 'query', index: active?.col === 'query' ? active.index : 0 } : active;
+      }
       highlight();
-    } else if (e.key === 'ArrowUp') {
+      return;
+    }
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const col = active?.col ?? (hasQuery ? 'query' : 'bookmark');
+      const len = colLength(col);
+      if (len === 0) return;
       e.preventDefault();
-      activeIndex = activeIndex < 0 ? items.length - 1 : Math.max(activeIndex - 1, 0);
+      let index = active?.col === col ? active.index : -1;
+      if (e.key === 'ArrowDown') {
+        index = index < 0 ? 0 : Math.min(index + 1, len - 1);
+      } else {
+        index = index < 0 ? len - 1 : Math.max(index - 1, 0);
+      }
+      active = { col, index };
       highlight();
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
+      return;
+    }
+
+    if (e.key === 'Enter' && active) {
       e.preventDefault();
-      pick(items[activeIndex]);
-    } else if (e.key === 'Escape') {
+      if (active.col === 'query') pickQuery(queryItems[active.index]);
+      else pickBookmark(bookmarkItems[active.index]);
+      return;
+    }
+
+    if (e.key === 'Escape') {
       hide();
     }
   });
 
-  const isInsideDismissRoot = (node: Node) =>
-    dismissRoots.some((root) => root.contains(node));
+  const isInsideDismissRoot = (node: Node) => dismissRoots.some((root) => root.contains(node));
 
   document.addEventListener('mousedown', (e) => {
     const target = e.target as Node;
-    if (list.hidden) return;
-    if (input.contains(target) || list.contains(target) || isInsideDismissRoot(target)) {
+    if (panel.hidden) return;
+    if (input.contains(target) || panel.contains(target) || isInsideDismissRoot(target)) {
       return;
     }
     hide();
@@ -215,7 +345,6 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit, dismis
 
   return {
     hide,
-    /** 下次 input 获得焦点时不展开联想（用于切换搜索引擎） */
     skipNextFocusSuggest: () => {
       skipSuggestOnNextFocus = true;
       hide();
@@ -229,4 +358,8 @@ function escapeHtml(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(s: string): string {
+  return escapeHtml(s).replace(/'/g, '&#39;');
 }

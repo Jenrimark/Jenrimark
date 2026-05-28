@@ -96,7 +96,24 @@ import { searchEngines } from '../data/view-search';
             }
           </div>
 
-          <ul id="view-suggest" class="view-suggest view-glass view-glass--strong view-glass--card" role="listbox" hidden></ul>
+          <div id="view-suggest" class="view-suggest view-glass view-glass--strong view-glass--card" hidden>
+            <div class="view-suggest__cols">
+              <div class="view-suggest__col">
+                <ul id="view-suggest-query" class="view-suggest__list" role="listbox" aria-label="搜索候选"></ul>
+              </div>
+              <div class="view-suggest__col view-suggest__col--bookmarks">
+                <div class="view-suggest__bm-toolbar">
+                  <label class="view-suggest__bm-sort-label" for="view-suggest-bm-sort">排序</label>
+                  <select id="view-suggest-bm-sort" class="view-suggest__bm-sort">
+                    <option value="relevance">相关度</option>
+                    <option value="title-asc">标题 A→Z</option>
+                    <option value="title-desc">标题 Z→A</option>
+                  </select>
+                </div>
+                <ul id="view-suggest-bookmarks" class="view-suggest__list" role="listbox" aria-label="书签"></ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
