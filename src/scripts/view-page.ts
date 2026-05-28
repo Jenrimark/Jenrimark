@@ -39,19 +39,36 @@ function loadEngineId(): SearchEngineId {
   return defaultSearchEngineId;
 }
 
-function loadFolderFilter(): Set<string> {
+/** `null` = 从未保存过，默认全选；`Set` 为空 = 用户点了全不选 */
+function loadFolderFilter(): Set<string> | null {
   try {
     const raw = localStorage.getItem(STORAGE_FOLDERS);
-    if (!raw) return new Set();
+    if (raw === null) return null;
     const ids = JSON.parse(raw) as string[];
     return new Set(Array.isArray(ids) ? ids : []);
   } catch {
-    return new Set();
+    return null;
   }
+}
+
+function resolveFolderFilter(filter: Set<string> | null, folderIds: string[]): Set<string> {
+  if (filter === null) return new Set(folderIds);
+  return pruneFolderFilter(filter, folderIds);
 }
 
 function saveFolderFilter(ids: Set<string>) {
   localStorage.setItem(STORAGE_FOLDERS, JSON.stringify([...ids]));
+}
+
+/** 去掉已不存在的文件夹 id，避免换设备/同步后筛选失效 */
+function pruneFolderFilter(filter: Set<string>, folderIds: string[]): Set<string> {
+  if (filter.size === 0) return filter;
+  const valid = new Set(folderIds);
+  const next = new Set<string>();
+  for (const id of filter) {
+    if (valid.has(id)) next.add(id);
+  }
+  return next;
 }
 
 function isFolderNode(node: ViewBookmarkNode): boolean {
@@ -72,7 +89,7 @@ function collectFolders(nodes: ViewBookmarkNode[], path: string[] = []): { id: s
 }
 
 function folderSelected(folderId: string, filter: Set<string>): boolean {
-  return filter.size === 0 || filter.has(folderId);
+  return filter.has(folderId);
 }
 
 function extractSections(
@@ -128,10 +145,11 @@ function updateClock(el: HTMLElement) {
   el.textContent = `${date} · ${time}`;
 }
 
-function renderBookmarks(sections: BookmarkSection[], container: HTMLElement) {
+function renderBookmarks(sections: BookmarkSection[], container: HTMLElement, noneSelected: boolean) {
   if (sections.length === 0) {
-    container.innerHTML =
-      '<p class="view-empty view-glass view-glass--soft view-glass--card view-glass--dashed">没有匹配的书签。试试调整文件夹筛选，或安装扩展同步浏览器书签。</p>';
+    container.innerHTML = noneSelected
+      ? ''
+      : '<p class="view-empty view-glass view-glass--soft view-glass--card view-glass--dashed">没有匹配的书签。试试调整文件夹筛选，或安装扩展同步浏览器书签。</p>';
     return;
   }
 
@@ -282,20 +300,43 @@ function initBookmarks() {
   if (!container || !folderPanel || !folderList) return;
 
   let tree: ViewBookmarkNode[] = sampleBookmarkTree;
-  let filter = loadFolderFilter();
+  let filter: Set<string> | null = loadFolderFilter();
   let fromExtension = false;
 
   const refresh = () => {
     const folders = collectFolders(tree);
-    renderFolderList(folderList, folders, filter, () => {
-      saveFolderFilter(filter);
-      refresh();
-    });
-    const sections = extractSections(tree, filter);
-    renderBookmarks(sections, container);
+    const folderIds = folders.map((f) => f.id);
+    const activeFilter = resolveFolderFilter(filter, folderIds);
+    renderFolderList(folderList, folders, activeFilter);
+    const sections = extractSections(tree, activeFilter);
+    const noneSelected = filter !== null && activeFilter.size === 0;
+    renderBookmarks(sections, container, noneSelected);
     bindFaviconRetry(container);
-    updateBookmarks(tree, filter);
+    updateBookmarks(tree, activeFilter);
   };
+
+  const toggleFolder = (folderId: string) => {
+    const folderIds = collectFolders(tree).map((f) => f.id);
+    if (folderIds.length === 0) return;
+
+    const active = resolveFolderFilter(filter, folderIds);
+    const next = new Set(active);
+    if (next.has(folderId)) {
+      next.delete(folderId);
+    } else {
+      next.add(folderId);
+    }
+    filter = next;
+    saveFolderFilter(filter);
+    refresh();
+  };
+
+  folderList.addEventListener('click', (e) => {
+    const chip = (e.target as Element).closest<HTMLButtonElement>('.view-folder-chip');
+    const folderId = chip?.dataset.folderId;
+    if (!folderId) return;
+    toggleFolder(folderId);
+  });
 
   const extBanner = document.getElementById('view-ext-banner');
 
@@ -318,7 +359,8 @@ function initBookmarks() {
   });
 
   folderSelectAll?.addEventListener('click', () => {
-    filter = new Set(collectFolders(tree).map((f) => f.id));
+    const folderIds = collectFolders(tree).map((f) => f.id);
+    filter = new Set(folderIds);
     saveFolderFilter(filter);
     refresh();
   });
@@ -354,40 +396,25 @@ function renderFolderList(
   el: HTMLElement,
   folders: { id: string; label: string }[],
   filter: Set<string>,
-  onChange: () => void,
 ) {
   if (folders.length === 0) {
-    el.innerHTML = '<p class="view-folder-panel__hint">暂无文件夹</p>';
+    el.innerHTML = '<p class="view-folder-panel__empty">暂无文件夹</p>';
     return;
   }
 
   el.innerHTML = folders
-    .map(
-      (f) => `
-    <label class="view-folder-item">
-      <input type="checkbox" data-folder-id="${escapeAttr(f.id)}" ${filter.size === 0 || filter.has(f.id) ? 'checked' : ''} />
-      <span>${escapeHtml(f.label)}</span>
-    </label>
-  `,
-    )
+    .map((f) => {
+      const pressed = filter.has(f.id);
+      return `
+    <button
+      type="button"
+      class="view-folder-chip"
+      data-folder-id="${escapeAttr(f.id)}"
+      aria-pressed="${pressed ? 'true' : 'false'}"
+    >${escapeHtml(f.label)}</button>
+  `;
+    })
     .join('');
-
-  el.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach((input) => {
-    input.addEventListener('change', () => {
-      const allIds = folders.map((f) => f.id);
-      const checked = [...el.querySelectorAll<HTMLInputElement>('input:checked')].map(
-        (i) => i.dataset.folderId!,
-      );
-
-      if (checked.length === 0 || checked.length === allIds.length) {
-        filter.clear();
-      } else {
-        filter.clear();
-        checked.forEach((id) => filter.add(id));
-      }
-      onChange();
-    });
-  });
 }
 
 function initKeyboard() {

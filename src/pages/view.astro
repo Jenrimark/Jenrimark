@@ -156,16 +156,18 @@ import { searchEngines } from '../data/view-search';
           <button type="button" id="view-folder-toggle" class="view-btn view-glass view-glass--soft view-glass--pill" aria-expanded="false">
             文件夹筛选
           </button>
-          <button type="button" id="view-folder-select-all" class="view-btn view-glass view-glass--soft view-glass--pill">全选</button>
-          <button type="button" id="view-folder-clear" class="view-btn view-glass view-glass--soft view-glass--pill">显示全部</button>
         </div>
       </div>
 
       <div id="view-folder-panel" class="view-folder-panel view-glass view-glass--panel">
         <p class="view-folder-panel__hint">
-          勾选要显示的文件夹；不选或全选则显示全部。筛选偏好会保存在本机。
+          点选要显示的文件夹；全选显示全部，全不选不显示书签。筛选偏好会保存在本机。
         </p>
-        <div id="view-folder-list" class="view-folder-list"></div>
+        <div class="view-folder-panel__actions">
+          <button type="button" id="view-folder-select-all" class="view-folder-action">全选</button>
+          <button type="button" id="view-folder-clear" class="view-folder-action">全不选</button>
+        </div>
+        <div id="view-folder-list" class="view-folder-list" role="group" aria-label="文件夹"></div>
       </div>
 
       <div id="view-bookmarks" class="view-bookmarks">
