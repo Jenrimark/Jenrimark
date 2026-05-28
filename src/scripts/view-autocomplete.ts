@@ -9,6 +9,8 @@ interface InitOptions {
   list: HTMLUListElement;
   isGoogle: () => boolean;
   onSubmit: (query: string) => void;
+  /** 点击这些区域时收起联想（如搜索引擎按钮区） */
+  dismissRoots?: HTMLElement[];
 }
 
 function loadRecent(): string[] {
@@ -92,11 +94,13 @@ function mergeSuggestions(recent: string[], google: string[]): SuggestItem[] {
   return out;
 }
 
-export function initSearchAutocomplete({ input, list, isGoogle, onSubmit }: InitOptions) {
+export function initSearchAutocomplete({ input, list, isGoogle, onSubmit, dismissRoots = [] }: InitOptions) {
   let activeIndex = -1;
   let items: SuggestItem[] = [];
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   let requestId = 0;
+  /** 切换搜索引擎等操作后的 focus 不应立刻弹出「最近」列表 */
+  let skipSuggestOnNextFocus = false;
 
   const hide = () => {
     list.hidden = true;
@@ -159,7 +163,8 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit }: Init
     if (id !== requestId) return;
 
     items = mergeSuggestions(recent, google);
-    activeIndex = items.length > 0 ? 0 : -1;
+    // 不默认选中第一项，避免聚焦后误按 Enter 提交「最近」
+    activeIndex = -1;
     render();
     highlight();
   };
@@ -172,6 +177,10 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit }: Init
   });
 
   input.addEventListener('focus', () => {
+    if (skipSuggestOnNextFocus) {
+      skipSuggestOnNextFocus = false;
+      return;
+    }
     void update();
   });
 
@@ -180,11 +189,11 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit }: Init
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      activeIndex = activeIndex < 0 ? 0 : Math.min(activeIndex + 1, items.length - 1);
       highlight();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
+      activeIndex = activeIndex < 0 ? items.length - 1 : Math.max(activeIndex - 1, 0);
       highlight();
     } else if (e.key === 'Enter' && activeIndex >= 0) {
       e.preventDefault();
@@ -194,11 +203,26 @@ export function initSearchAutocomplete({ input, list, isGoogle, onSubmit }: Init
     }
   });
 
-  document.addEventListener('click', (e) => {
-    if (!list.hidden && !input.contains(e.target as Node) && !list.contains(e.target as Node)) {
-      hide();
+  const isInsideDismissRoot = (node: Node) =>
+    dismissRoots.some((root) => root.contains(node));
+
+  document.addEventListener('mousedown', (e) => {
+    const target = e.target as Node;
+    if (list.hidden) return;
+    if (input.contains(target) || list.contains(target) || isInsideDismissRoot(target)) {
+      return;
     }
+    hide();
   });
+
+  return {
+    hide,
+    /** 下次 input 获得焦点时不展开联想（用于切换搜索引擎） */
+    skipNextFocusSuggest: () => {
+      skipSuggestOnNextFocus = true;
+      hide();
+    },
+  };
 }
 
 function escapeHtml(s: string): string {

@@ -204,12 +204,29 @@ function initSearch() {
     localStorage.setItem(STORAGE_ENGINE, engineId);
   };
 
+  const autocomplete = initSearchAutocomplete({
+    input,
+    list: suggest,
+    isGoogle: () => engineId === 'google',
+    onSubmit: submitQuery,
+    dismissRoots: [enginesEl],
+  });
+
+  const onEngineInteract = (e: Event) => {
+    // 联想层曾盖住引擎按钮时，须先收起再处理点击，避免 mousedown 误触发 pick()
+    e.preventDefault();
+    autocomplete.skipNextFocusSuggest();
+  };
+
+  enginesEl.addEventListener('mousedown', onEngineInteract);
+
   enginesEl.querySelectorAll<HTMLButtonElement>('.view-engine').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.engine as SearchEngineId | undefined;
       if (!id || !searchEngines.some((e) => e.id === id)) return;
       engineId = id;
       applyEngine();
+      autocomplete.skipNextFocusSuggest();
       input.focus();
     });
   });
@@ -219,14 +236,8 @@ function initSearch() {
     submitQuery(input.value);
   });
 
-  initSearchAutocomplete({
-    input,
-    list: suggest,
-    isGoogle: () => engineId === 'google',
-    onSubmit: submitQuery,
-  });
-
   applyEngine();
+  autocomplete.skipNextFocusSuggest();
   input.focus();
 }
 

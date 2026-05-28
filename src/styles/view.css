@@ -364,6 +364,7 @@ html[data-view-theme='dark'] .view-greeting {
 }
 
 .view-search-wrap {
+  position: relative;
   width: 100%;
   max-width: 640px;
 }
@@ -378,6 +379,7 @@ html[data-view-theme='dark'] .view-greeting {
 
 .view-search-box {
   position: relative;
+  z-index: 1;
 }
 
 .view-search-form {
@@ -440,6 +442,8 @@ html[data-view-theme='dark'] .view-greeting {
 }
 
 .view-engines {
+  position: relative;
+  z-index: 25;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -464,14 +468,15 @@ html[data-view-theme='dark'] .view-greeting {
 
 .view-suggest {
   position: absolute;
-  z-index: 20;
+  z-index: 10;
   top: calc(100% + 0.45rem);
   left: 0;
   right: 0;
   margin: 0;
   padding: 0.35rem;
   list-style: none;
-  max-height: 320px;
+  /* 限制高度，减少向下盖住搜索引擎按钮区的面积 */
+  max-height: min(11rem, 38vh);
   overflow-y: auto;
 }
 
