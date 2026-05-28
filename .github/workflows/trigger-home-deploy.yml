@@ -40,8 +40,6 @@ jobs:
 
           echo ""
           echo "2/2 POST deploy: ${WEBHOOK_URL%%token=*}token=***"
-          curl -fsS --connect-timeout 15 --max-time 45 -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d '{}'
+          curl -fsS --http1.1 --connect-timeout 15 --max-time 30 -X POST "$WEBHOOK_URL"
           echo ""
           echo "Deploy triggered on home server."

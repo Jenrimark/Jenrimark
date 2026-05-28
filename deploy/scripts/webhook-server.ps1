@@ -22,6 +22,26 @@ function Get-QueryToken([System.Net.HttpListenerRequest]$request) {
     return [System.Uri]::UnescapeDataString($raw).Trim()
 }
 
+function Send-Response(
+    [System.Net.HttpListenerResponse]$response,
+    [int]$code,
+    [string]$body
+) {
+    $response.StatusCode = $code
+    $response.Headers["Connection"] = "Close"
+    $buf = [System.Text.Encoding]::UTF8.GetBytes($body)
+    $response.ContentLength64 = $buf.Length
+    $response.OutputStream.Write($buf, 0, $buf.Length)
+    $response.OutputStream.Close()
+}
+
+function Start-DeployJob() {
+    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
+    Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
+        "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1
+    ) | Out-Null
+}
+
 # Load token: prefer webhook.token file; env DEPLOY_WEBHOOK_TOKEN overrides if set
 $Token = $null
 $tokenSource = "none"
@@ -61,48 +81,30 @@ while ($listener.IsListening) {
         $request = $context.Request
         $response = $context.Response
 
-        $code = 200
-        $body = "ok"
-
         if ($request.Url.AbsolutePath -eq "/health") {
-            $body = "ok"
+            Send-Response $response 200 "ok"
         }
         elseif ($request.HttpMethod -ne "POST") {
-            $code = 405
-            $body = "POST only"
+            Send-Response $response 405 "POST only"
         }
         elseif ($request.Url.AbsolutePath -ne "/webhook") {
-            $code = 404
-            $body = "not found"
+            Send-Response $response 404 "not found"
         }
         else {
             $qToken = Get-QueryToken $request
             if ($qToken -cne $Token) {
-                $code = 401
-                $body = "unauthorized"
                 Write-Host "[$(Get-Date -Format 'HH:mm:ss')] 401 mismatch (query len=$($qToken.Length), expected len=$($Token.Length))"
                 if ($qToken.Length -eq 0) {
                     Write-Host "  Hint: add ?token=... to URL"
                 }
+                Send-Response $response 401 "unauthorized"
             }
             else {
-                if ($request.HasEntityBody) {
-                    $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
-                    $reader.ReadToEnd() | Out-Null
-                    $reader.Close()
-                }
-                Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Deploy triggered."
-                Start-Process -FilePath "powershell.exe" -WorkingDirectory $RepoRoot -WindowStyle Minimized -ArgumentList @(
-                    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $DeployPs1
-                ) | Out-Null
-                $body = "deploy started"
+                # 先响应再部署，避免 ReadToEnd 经 frp 阻塞导致 GitHub Actions 超时
+                Send-Response $response 200 "deploy started"
+                Start-DeployJob
             }
         }
-
-        $response.StatusCode = $code
-        $buf = [System.Text.Encoding]::UTF8.GetBytes($body)
-        $response.ContentLength64 = $buf.Length
-        $response.OutputStream.Write($buf, 0, $buf.Length)
     }
     catch {
         Write-Host "[$(Get-Date -Format 'HH:mm:ss')] Request error: $_"
