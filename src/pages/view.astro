@@ -129,18 +129,30 @@ import { searchEngines } from '../data/view-search';
         </div>
         <a
           class="view-btn view-btn--accent"
-          href="/downloads/jenrimark-view-extension.zip"
+          href="/downloads/jenrimark-view-extension.zip?v=0.1.1"
           download="jenrimark-view-extension.zip"
         >
-          下载扩展 (.zip)
+          下载扩展 v0.1.1 (.zip)
         </a>
       </div>
       <details class="view-ext-install">
         <summary>安装步骤（换设备可重新下载）</summary>
         <ol>
-          <li>下载并解压 zip，确认文件夹内有 <code>manifest.json</code></li>
+          <li>
+            下载并解压 zip，打开 <code>manifest.json</code> 确认
+            <code>"version": "0.1.1"</code> 且含
+            <code>47.122.127.145:23333</code>（旧包约 898 字节、无新 IP，无效）
+          </li>
+          <li>
+            若本站 zip 仍是旧版，改用
+            <a
+              href="https://github.com/Jenrimark/Jenrimark/raw/main/public/downloads/jenrimark-view-extension.zip"
+              target="_blank"
+              rel="noopener noreferrer"
+            >GitHub 直链</a>（约 3.2 KB，manifest 约 1 KB）
+          </li>
           <li>Chrome 打开 <code>chrome://extensions</code>，开启「开发者模式」</li>
-          <li>点击「加载已解压的扩展程序」，选择解压后的文件夹</li>
+          <li>先移除旧扩展，再「加载已解压的扩展程序」选解压后的文件夹</li>
           <li>刷新本页，状态应变为「已连接浏览器扩展」</li>
         </ol>
       </details>

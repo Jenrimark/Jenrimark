@@ -7,9 +7,12 @@ function Invoke-Git {
     param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
     $prev = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
-    & git @GitArgs 2>&1 | Out-Null
+    $output = & git @GitArgs 2>&1
     $code = $LASTEXITCODE
     $ErrorActionPreference = $prev
+    if ($output) {
+        $output | ForEach-Object { Write-Host $_ }
+    }
     if ($code -ne 0) {
         throw "git failed: git $($GitArgs -join ' ') (exit $code)"
     }
