@@ -367,6 +367,7 @@ html[data-view-theme='dark'] .view-greeting {
   position: relative;
   width: 100%;
   max-width: 640px;
+  text-align: left;
 }
 
 .view-svg-filters {
@@ -412,6 +413,7 @@ html[data-view-theme='dark'] .view-greeting {
   color: var(--view-text);
   font: inherit;
   font-size: 1rem;
+  text-align: left;
   outline: none;
 }
 
